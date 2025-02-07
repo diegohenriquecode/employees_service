@@ -108,3 +108,4 @@ yarn serverless invoke -f migrate -d 'down' --aws-profile <aws-profile>
 $ aws lambda invoke /dev/null --endpoint-url http://localhost:8605 --function-name barueri-backend-offline-migrate --payload $(echo '"down"' | base64)
 ```
 # employees_service
+# employees_service
