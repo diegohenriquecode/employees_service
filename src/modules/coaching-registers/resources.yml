@@ -1,0 +1,99 @@
+resources:
+  Resources:
+    CoachingRegistersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: 'BarueriCoachingRegisters'
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          -
+            AttributeName: account
+            AttributeType: S
+          -
+            AttributeName: _employee_id
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: account
+            KeyType: HASH
+          -
+            AttributeName: _employee_id
+            KeyType: RANGE
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
+    CoachingRegisterActionQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        ContentBasedDeduplication: true
+        FifoQueue: true
+        QueueName: 'coaching-register-action.fifo'
+        DelaySeconds: 0
+        RedrivePolicy:
+          deadLetterTargetArn: !GetAtt DeadLettersQueue.Arn
+          maxReceiveCount: 5
+        VisibilityTimeout: 180
+    CoachingRegisterActionSub:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Protocol: sqs
+        Endpoint: !GetAtt CoachingRegisterActionQueue.Arn
+        TopicArn: !Ref MainTopic
+        FilterPolicy:
+          Type: ['NewCoachingRegisterVersion']
+    CoachingRegisterTimelineQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        ContentBasedDeduplication: true
+        FifoQueue: true
+        QueueName: 'coaching-register-timeline.fifo'
+        DelaySeconds: 0
+        RedrivePolicy:
+          deadLetterTargetArn: !GetAtt DeadLettersQueue.Arn
+          maxReceiveCount: 5
+        VisibilityTimeout: 180
+    CoachingRegisterTimelineSub:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Protocol: sqs
+        Endpoint: !GetAtt CoachingRegisterTimelineQueue.Arn
+        TopicArn: !Ref MainTopic
+        FilterPolicy:
+          Type: ['NewCoachingRegisterVersion']
+    CoachingRegisterEmailQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        ContentBasedDeduplication: true
+        FifoQueue: true
+        QueueName: 'coaching-register-email.fifo'
+        DelaySeconds: 0
+        RedrivePolicy:
+          deadLetterTargetArn: !GetAtt DeadLettersQueue.Arn
+          maxReceiveCount: 5
+        VisibilityTimeout: 180
+    CoachingRegisterEmailSub:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Protocol: sqs
+        Endpoint: !GetAtt CoachingRegisterEmailQueue.Arn
+        TopicArn: !Ref MainTopic
+        FilterPolicy:
+          Type: ['NewCoachingRegisterVersion']
+    CoachingRegisterMysqlQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        ContentBasedDeduplication: true
+        FifoQueue: true
+        QueueName: 'coaching-register-mysql.fifo'
+        DelaySeconds: 0
+        RedrivePolicy:
+          deadLetterTargetArn: !GetAtt DeadLettersQueue.Arn
+          maxReceiveCount: 5
+        VisibilityTimeout: 180
+    CoachingRegisterMysqlSub:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Protocol: sqs
+        Endpoint: !GetAtt CoachingRegisterMysqlQueue.Arn
+        TopicArn: !Ref MainTopic
+        FilterPolicy:
+          Type: ['NewCoachingRegisterVersion']

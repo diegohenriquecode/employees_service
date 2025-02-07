@@ -1,0 +1,21 @@
+resources:
+  Resources:
+    OnboardingTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: 'BarueriOnboarding'
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          -
+            AttributeName: account
+            AttributeType: S
+          -
+            AttributeName: userId
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: account
+            KeyType: HASH
+          -
+            AttributeName: userId
+            KeyType: RANGE

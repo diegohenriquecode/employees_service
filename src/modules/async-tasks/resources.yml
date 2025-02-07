@@ -1,0 +1,112 @@
+resources:
+  Resources:
+    AsyncTasksTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: 'BarueriAsyncTasksTable'
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          -
+            AttributeName: account
+            AttributeType: S
+          -
+            AttributeName: _TypeDateEmployee
+            AttributeType: S
+          -
+            AttributeName: id
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: account
+            KeyType: HASH
+          -
+            AttributeName: _TypeDateEmployee
+            KeyType: RANGE
+        GlobalSecondaryIndexes:
+          -
+            IndexName: 'BarueriAsyncTasksByAccountAndId'
+            KeySchema:
+              -
+                AttributeName: account
+                KeyType: HASH
+              -
+                AttributeName: id
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+    GenerateAsyncReportQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        ContentBasedDeduplication: true
+        FifoQueue: true
+        QueueName: 'generate-async-report.fifo'
+        DelaySeconds: 0
+        RedrivePolicy:
+          deadLetterTargetArn: !GetAtt DeadLettersQueue.Arn
+          maxReceiveCount: 5
+        VisibilityTimeout: 180
+    GenerateAsyncReportSub:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Protocol: sqs
+        Endpoint: !GetAtt GenerateAsyncReportQueue.Arn
+        TopicArn: !Ref MainTopic
+        FilterPolicy:
+          Type: ['GenerateAsyncReport']
+    NewUsersImportQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        ContentBasedDeduplication: true
+        FifoQueue: true
+        QueueName: 'users-import.fifo'
+        DelaySeconds: 0
+        RedrivePolicy:
+          deadLetterTargetArn: !GetAtt DeadLettersQueue.Arn
+          maxReceiveCount: 5
+        VisibilityTimeout: 180
+    NewUsersImportSub:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Protocol: sqs
+        Endpoint: !GetAtt NewUsersImportQueue.Arn
+        TopicArn: !Ref MainTopic
+        FilterPolicy:
+          Type: ['NewUsersImport']
+    NewRanksImportQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        ContentBasedDeduplication: true
+        FifoQueue: true
+        QueueName: 'ranks-import.fifo'
+        DelaySeconds: 0
+        RedrivePolicy:
+          deadLetterTargetArn: !GetAtt DeadLettersQueue.Arn
+          maxReceiveCount: 5
+        VisibilityTimeout: 180
+    NewRanksImportSub:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Protocol: sqs
+        Endpoint: !GetAtt NewRanksImportQueue.Arn
+        TopicArn: !Ref MainTopic
+        FilterPolicy:
+          Type: ['NewRanksImport']
+    NewManagersImportQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        ContentBasedDeduplication: true
+        FifoQueue: true
+        QueueName: 'managers-import.fifo'
+        DelaySeconds: 0
+        RedrivePolicy:
+          deadLetterTargetArn: !GetAtt DeadLettersQueue.Arn
+          maxReceiveCount: 5
+        VisibilityTimeout: 180
+    NewManagersImportSub:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Protocol: sqs
+        Endpoint: !GetAtt NewManagersImportQueue.Arn
+        TopicArn: !Ref MainTopic
+        FilterPolicy:
+          Type: ['NewManagersImport']

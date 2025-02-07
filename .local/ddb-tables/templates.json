@@ -1,0 +1,42 @@
+[
+    {
+        "id": "feedback-template",
+        "type": "Feedback",
+        "account": "pioneer",
+        "properties": {
+            "title": "Template 1",
+            "type": "compliment",
+            "text": "Esse é o primeiro template de feedback"
+        },
+        "created_at": "2022-12-23T12:37:11.780Z",
+        "created_by": "rh",
+        "updated_at": "2022-12-23T12:37:11.780Z",
+        "updated_by": "rh"
+    },
+    {
+        "id": "reprimand-template",
+        "type": "Reprimand",
+        "account": "pioneer",
+        "properties": {
+            "title": "Template 2",
+            "text": "Esse é o primeiro template de advertência"
+        },
+        "created_at": "2022-12-23T12:37:11.780Z",
+        "created_by": "rh",
+        "updated_at": "2022-12-23T12:37:11.780Z",
+        "updated_by": "rh"
+    },
+    {
+        "id": "suspension-template",
+        "type": "Suspension",
+        "account": "pioneer",
+        "properties": {
+            "title": "Template 3",
+            "text": "Esse é o primeiro template de suspensão"
+        },
+        "created_at": "2022-12-23T12:37:11.780Z",
+        "created_by": "rh",
+        "updated_at": "2022-12-23T12:37:11.780Z",
+        "updated_by": "rh"
+    }
+]

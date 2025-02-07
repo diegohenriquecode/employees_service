@@ -1,0 +1,11 @@
+functions:
+  job-climate-check-assiduity:
+    handler: src/modules/climate-check-assiduity/job.handler
+    timeout: 900
+    events:
+      - schedule: cron(0 * * * ? *)
+  subscription-climate-check-assiduity:
+    handler: src/modules/climate-check-assiduity/subscription.handler
+    events:
+      - sqs:
+          arn: !GetAtt ClimateCheckAssiduityQueue.Arn

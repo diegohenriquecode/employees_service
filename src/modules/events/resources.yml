@@ -1,0 +1,38 @@
+resources:
+  Resources:
+    MainTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        ContentBasedDeduplication: true
+        FifoTopic: true
+        TopicName: 'BarueriMainTopic.fifo'
+    MainTopicEventsTable:
+      Type: 'AWS::DynamoDB::Table'
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: MessageId
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: MessageId
+            KeyType: HASH
+        TableName: 'BarueriMainTopicEvents'
+        BillingMode: PAY_PER_REQUEST
+    MainTopicEventsSubQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        ContentBasedDeduplication: true
+        FifoQueue: true
+        QueueName: 'all-events.fifo'
+        DelaySeconds: 0
+        RedrivePolicy:
+          deadLetterTargetArn: !GetAtt DeadLettersQueue.Arn
+          maxReceiveCount: 5
+        VisibilityTimeout: 180
+    MainTopicEventsSub:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Protocol: sqs
+        Endpoint: !GetAtt MainTopicEventsSubQueue.Arn
+        TopicArn: !Ref MainTopic

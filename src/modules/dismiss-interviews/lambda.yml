@@ -1,0 +1,15 @@
+functions:
+  stream-dismiss-interviews:
+    handler: src/stream.handler
+    timeout: ${self:custom.lambda-timeout.stream}
+    environment:
+      EVENT_TYPE: 'NewDismissInterviewVersion'
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt DismissInterviewsTable.StreamArn
+  sub-dismiss-interview-mysql:
+    handler: src/modules/dismiss-interviews/sub_mysql.handler
+    events:
+      - sqs:
+          arn: !GetAtt DismissInterviewMysqlQueue.Arn

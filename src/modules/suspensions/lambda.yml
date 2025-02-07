@@ -1,0 +1,25 @@
+functions:
+  stream-suspensions:
+    handler: src/stream.handler
+    timeout: ${self:custom.lambda-timeout.stream}
+    environment:
+      EVENT_TYPE: 'NewSuspensionVersion'
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt SuspensionsTable.StreamArn
+  stream-s3-suspensions:
+    handler: src/modules/suspensions/stream-s3.handler
+    timeout: 900
+    events:
+      - s3:
+          bucket: !Ref ProtectedBucket
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: 'suspensions/'
+          existing: true
+  sub-suspension-mysql:
+    handler: src/modules/suspensions/sub_mysql.handler
+    events:
+      - sqs:
+          arn: !GetAtt SuspensionMysqlQueue.Arn

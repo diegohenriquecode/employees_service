@@ -1,0 +1,10 @@
+functions:
+  api-app:
+    handler: src/api/app/lambda.handler
+    events:
+      - http:
+          path: 'app/{proxy+}'
+          method: ANY
+          cors: true
+          authorizer: ${self:custom.privateAuth}
+          localAuthorizer: ${self:custom.localPrivateAuth}

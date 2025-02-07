@@ -1,0 +1,27 @@
+resources:
+  Resources:
+    VideosTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: BarueriVideos
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          -
+            AttributeName: id
+            AttributeType: S
+          -
+            AttributeName: tokyo_video_id
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: id
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          -
+            IndexName: BarueriVideosByTokyoId
+            KeySchema:
+              -
+                AttributeName: tokyo_video_id
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL

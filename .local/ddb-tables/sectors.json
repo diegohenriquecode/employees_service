@@ -1,0 +1,110 @@
+[
+    {
+        "account": "pioneer",
+        "id": "root",
+        "color": "#63a3df",
+        "name": "raiz",
+        "path": "root",
+        "manager": "74afd1fa-b0e2-4b3b-b97c-9cd8da94e048",
+        "removed": false
+    },
+    {
+        "account": "pioneer",
+        "id": "manager",
+        "color": "#63a3df",
+        "name": "manager",
+        "path": "root;manager",
+        "manager": "manager",
+        "removed": false
+    },
+    {
+        "account": "pioneer",
+        "id": "be5770ec-4656-429d-b077-1f85925ae674",
+        "color": "#63a3df",
+        "name": "setor2",
+        "path": "root;be5770ec-4656-429d-b077-1f85925ae674",
+        "manager": null,
+        "removed": false
+    },
+    {
+        "account": "pioneer",
+        "id": "sector2.1",
+        "color": "#63a3df",
+        "name": "setor2.1",
+        "path": "root;be5770ec-4656-429d-b077-1f85925ae674;sector2.1",
+        "manager": null,
+        "removed": false
+    },
+    {
+        "account": "pioneer",
+        "id": "setor2.2",
+        "color": "#63a3df",
+        "name": "setor2.2",
+        "path": "root;be5770ec-4656-429d-b077-1f85925ae674;sector2.1;sector2.2",
+        "manager": null,
+        "removed": false
+    },
+    {
+        "account": "pioneer",
+        "id": "be5770ec-4656-429d-b077-1f85925ae673",
+        "color": "#63a3df",
+        "name": "setor1-3",
+        "path": "root;manager;be5770ec-4656-429d-b077-1f85925ae673",
+        "manager": "799c6029-79af-477b-b2ef-325dfed28dee",
+        "removed": false
+    },
+    {
+        "account": "pioneer",
+        "id": "be5770ec-4656-429d-b077-1f85925ae676",
+        "color": "#63a3df",
+        "name": "setor1-4",
+        "path": "root;manager;be5770ec-4656-429d-b077-1f85925ae676",
+        "manager": "799c6029-79af-477b-b2ef-325dfed28dee",
+        "removed": true
+    },
+    {
+        "account": "pioneer",
+        "id": "be5770ec-4656-429d-b077-1f85925ae677",
+        "color": "#63a3df",
+        "name": "setor1-5",
+        "path": "root;manager;be5770ec-4656-429d-b077-1f85925ae677",
+        "manager": "799c6029-79af-477b-b2ef-325dfed28dee",
+        "removed": true
+    },
+    {
+        "account": "pioneer",
+        "id": "lpa1",
+        "color": "#63a3df",
+        "name": "lpa1",
+        "path": "root;lpa1",
+        "manager": "lpa1_manager",
+        "removed": false
+    },
+    {
+        "account": "pioneer",
+        "id": "lpa2",
+        "color": "#63a3df",
+        "name": "lpa2",
+        "path": "root;lpa1;lpa2",
+        "manager": "lpa2_manager",
+        "removed": false
+    },
+    {
+        "account": "pioneer",
+        "id": "lpa3",
+        "color": "#63a3df",
+        "name": "lpa3",
+        "path": "root;lpa1;lpa2;lpa3",
+        "manager": "lpa3_manager",
+        "removed": false
+    },
+    {
+        "account": "pioneer",
+        "id": "lpa4",
+        "color": "#63a3df",
+        "name": "lpa4",
+        "path": "root;lpa1;lpa2;lpa3;lpa4",
+        "manager": null,
+        "removed": false
+    }
+]

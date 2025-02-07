@@ -1,0 +1,20 @@
+functions:
+  stream-feedbacks:
+    handler: src/stream.handler
+    timeout: ${self:custom.lambda-timeout.stream}
+    environment:
+      EVENT_TYPE: 'NewFeedbackVersion'
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt FeedbacksTable.StreamArn
+  sub-feedback-mysql:
+    handler: src/modules/feedbacks/sub_mysql.handler
+    events:
+      - sqs:
+          arn: !GetAtt FeedbackMysqlQueue.Arn
+  sub-feedback-email:
+    handler: src/modules/feedbacks/sub-email.handler
+    events:
+      - sqs:
+          arn: !GetAtt FeedbackEmailQueue.Arn

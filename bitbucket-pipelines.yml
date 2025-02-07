@@ -1,0 +1,46 @@
+image: atlassian/default-image:3
+
+definitions:
+  steps:
+    - step: &build-and-deploy
+        name: Deploy
+        deployment: staging
+        size: 2x
+        image: nikolaik/python-nodejs:python3.8-nodejs18-bullseye
+        caches:
+          - node
+          - pip
+        script:
+          - apt-get update
+          - apt-get install zip -y
+          - pip3 install awscli --upgrade --user
+          - export PATH=~/.local/bin:$PATH
+          - yarn --frozen-lockfile
+          - yarn build:templates
+          - yarn serverless deploy --verbose
+          - yarn serverless invoke -f migrate --verbose
+
+pipelines:
+  pull-requests:
+    '**':
+      - step:
+          name: Unit Testing
+          image: node:18.14-alpine
+          caches:
+            - node
+          script:
+            - yarn --frozen-lockfile
+            - yarn jest --runInBand --verbose
+  branches:
+    release/*:
+      - step: *build-and-deploy
+    develop:
+      - step:
+          <<: *build-and-deploy
+          name: Develop Deploy
+          deployment: test
+    master:
+      - step:
+          <<: *build-and-deploy
+          name: Production Deploy
+          deployment: production

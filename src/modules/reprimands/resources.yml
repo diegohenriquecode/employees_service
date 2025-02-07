@@ -1,0 +1,62 @@
+resources:
+  Resources:
+    ReprimandsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: 'BarueriReprimands'
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          -
+            AttributeName: account
+            AttributeType: S
+          -
+            AttributeName: _employee_id
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: account
+            KeyType: HASH
+          -
+            AttributeName: _employee_id
+            KeyType: RANGE
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
+
+    ReprimandTimelineQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        ContentBasedDeduplication: true
+        FifoQueue: true
+        QueueName: 'reprimand-timeline.fifo'
+        DelaySeconds: 0
+        RedrivePolicy:
+          deadLetterTargetArn: !GetAtt DeadLettersQueue.Arn
+          maxReceiveCount: 5
+        VisibilityTimeout: 180
+    ReprimandTimelineSub:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Protocol: sqs
+        Endpoint: !GetAtt ReprimandTimelineQueue.Arn
+        TopicArn: !Ref MainTopic
+        FilterPolicy:
+          Type: ['NewReprimandVersion']
+    ReprimandMysqlQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        ContentBasedDeduplication: true
+        FifoQueue: true
+        QueueName: 'reprimand-mysql.fifo'
+        DelaySeconds: 0
+        RedrivePolicy:
+          deadLetterTargetArn: !GetAtt DeadLettersQueue.Arn
+          maxReceiveCount: 5
+        VisibilityTimeout: 180
+    ReprimandMysqlSub:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Protocol: sqs
+        Endpoint: !GetAtt ReprimandMysqlQueue.Arn
+        TopicArn: !Ref MainTopic
+        FilterPolicy:
+          Type: ['NewReprimandVersion']

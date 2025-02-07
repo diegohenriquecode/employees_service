@@ -1,0 +1,6 @@
+functions:
+  sub-users-hierarchical:
+    handler: src/modules/users-hierarchical/subscriptions/sub_hierarchical_users.handler
+    events:
+      - sqs:
+          arn: !GetAtt UserHierarchicalQueue.Arn

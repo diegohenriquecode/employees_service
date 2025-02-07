@@ -1,0 +1,11 @@
+functions:
+  stream-s3-employees:
+    handler: src/modules/employees/stream-s3.handler
+    timeout: 900
+    events:
+      - s3:
+          bucket: !Ref ProtectedBucket
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: 'employees/'
+          existing: true

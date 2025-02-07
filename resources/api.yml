@@ -1,0 +1,164 @@
+resources:
+  Resources:
+    LogsS3Bucket:
+      Type: AWS::S3::Bucket
+    ApiDistribution:
+      Type: AWS::CloudFront::Distribution
+      DependsOn:
+        - LogsS3Bucket
+        - FrontBucket
+        - FrontOriginAccessId
+        - FrontBucketPolicy
+        - ApiGatewayRestApi
+      Properties:
+        DistributionConfig:
+          Enabled: true
+          HttpVersion: http2
+          IPV6Enabled: true
+          PriceClass: PriceClass_100
+          Comment: "barueri api"
+          DefaultRootObject: "index.html"
+          Aliases:
+            - ${self:custom.secrets.REACT_APP_API_DOMAIN} # api.dev.app-gerencial.scisapp.com
+          ViewerCertificate:
+            AcmCertificateArn: ${self:custom.secrets.DOMAIN_CERTIFICATE}
+            MinimumProtocolVersion: TLSv1.2_2018
+            SslSupportMethod: sni-only
+          Logging:
+            Bucket: !GetAtt LogsS3Bucket.DomainName
+            Prefix: 'api/'
+          CustomErrorResponses:
+            - ErrorCachingMinTTL: 0
+              ErrorCode: 400
+            - ErrorCachingMinTTL: 0
+              ErrorCode: 403
+            - ErrorCachingMinTTL: 0
+              ErrorCode: 404
+            - ErrorCachingMinTTL: 0
+              ErrorCode: 500
+            - ErrorCachingMinTTL: 0
+              ErrorCode: 501
+            - ErrorCachingMinTTL: 0
+              ErrorCode: 502
+            - ErrorCachingMinTTL: 0
+              ErrorCode: 503
+            - ErrorCachingMinTTL: 0
+              ErrorCode: 504
+          DefaultCacheBehavior:
+            TargetOriginId: DefaultOrigin
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+            FieldLevelEncryptionId: ""
+            CachedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+            ForwardedValues:
+              Cookies:
+                Forward: none
+              QueryString: false
+            MinTTL: 0
+            MaxTTL: 31536000
+            DefaultTTL: 86400
+            SmoothStreaming: false
+            Compress: true
+          CacheBehaviors:
+            -
+              AllowedMethods: ['GET', 'HEAD', 'OPTIONS', 'PUT', 'PATCH', 'POST', 'DELETE']
+              CachedMethods: ['GET', 'HEAD', 'OPTIONS']
+              Compress: true
+              DefaultTTL: 86400
+              FieldLevelEncryptionId: ''
+              ForwardedValues:
+                Cookies:
+                  Forward: 'none'
+                Headers: ['Access-Control-Request-Headers', 'Access-Control-Request-Methods', 'Authorization', 'Origin', 'User-Agent']
+                QueryString: true
+                QueryStringCacheKeys: []
+              LambdaFunctionAssociations: []
+              MaxTTL: 31536000
+              MinTTL: 0
+              PathPattern: 'v1/*'
+              SmoothStreaming: false
+              TargetOriginId: RootOrigin
+              ViewerProtocolPolicy: 'redirect-to-https'
+          Origins:
+            -
+              Id: DefaultOrigin
+              DomainName: !GetAtt FrontBucket.DomainName
+              OriginPath: "/api"
+              S3OriginConfig:
+                OriginAccessIdentity: !Join ["", ["origin-access-identity/cloudfront/", !Ref FrontOriginAccessId]]
+            -
+              Id: RootOrigin
+              DomainName: !Join ['', [!Ref ApiGatewayRestApi, '.execute-api.', !Ref 'AWS::Region', '.amazonaws.com']]
+              OriginPath: ""
+              CustomOriginConfig:
+                HTTPPort: 80
+                HTTPSPort: 443
+                OriginKeepaliveTimeout: 5
+                OriginProtocolPolicy: 'https-only'
+                OriginReadTimeout: 30
+                OriginSSLProtocols: ['TLSv1', 'TLSv1.1', 'TLSv1.2']
+    ApiDNSRecord:
+      Type: AWS::Route53::RecordSet
+      DependsOn: ApiDistribution
+      Properties:
+        HostedZoneId: ${self:custom.secrets.BASE_DOMAIN_HOSTED_ZONE_ID}
+        Name: ${self:custom.secrets.REACT_APP_API_DOMAIN}
+        Type: A
+        AliasTarget:
+          DNSName: !GetAtt ApiDistribution.DomainName
+          EvaluateTargetHealth: false
+          HostedZoneId: Z2FDTNDATAQYW2
+    ApiIpV6DNSRecord:
+      Type: AWS::Route53::RecordSet
+      DependsOn: ApiDistribution
+      Properties:
+        HostedZoneId: ${self:custom.secrets.BASE_DOMAIN_HOSTED_ZONE_ID}
+        Name: ${self:custom.secrets.REACT_APP_API_DOMAIN}
+        Type: AAAA
+        AliasTarget:
+          DNSName: !GetAtt ApiDistribution.DomainName
+          EvaluateTargetHealth: false
+          HostedZoneId: Z2FDTNDATAQYW2
+    GatewayResponseDefault4XX:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: DEFAULT_4XX
+        RestApiId: !Ref ApiGatewayRestApi
+    GatewayResponseDefault5XX:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: DEFAULT_5XX
+        RestApiId: !Ref ApiGatewayRestApi
+    GatewayResponseUnauthorized:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseTemplates:
+          'application/json': '{"type":"about:blank","title":"Unauthorized","status":401,"detail":"Invalid token"}'
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: UNAUTHORIZED
+        RestApiId: !Ref ApiGatewayRestApi
+    GatewayResponseInvalidApiKey:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseTemplates:
+          'application/json': '{"type":"about:blank","title":"Unauthorized","status":401,"detail":"Invalid credentials"}'
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: INVALID_API_KEY
+        StatusCode: "401"
+        RestApiId: !Ref ApiGatewayRestApi

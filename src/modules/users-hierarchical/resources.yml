@@ -1,0 +1,21 @@
+resources:
+  Resources:
+    UserHierarchicalQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        ContentBasedDeduplication: true
+        FifoQueue: true
+        QueueName: 'user-hierarchical.fifo'
+        DelaySeconds: 0
+        RedrivePolicy:
+          deadLetterTargetArn: !GetAtt DeadLettersQueue.Arn
+          maxReceiveCount: 5
+        VisibilityTimeout: 180
+    UserHierarchicalSub:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Protocol: sqs
+        Endpoint: !GetAtt UserHierarchicalQueue.Arn
+        TopicArn: !Ref MainTopic
+        FilterPolicy:
+          Type: ['NewUserVersion']

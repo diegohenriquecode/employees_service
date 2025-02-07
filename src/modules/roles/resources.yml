@@ -1,0 +1,43 @@
+resources:
+  Resources:
+    RolesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: 'BarueriRoles'
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          -
+            AttributeName: id
+            AttributeType: S
+          -
+            AttributeName: account
+            AttributeType: S
+
+        KeySchema:
+          -
+            AttributeName: account
+            KeyType: HASH
+          -
+            AttributeName: id
+            KeyType: RANGE
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
+    RoleQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        ContentBasedDeduplication: true
+        FifoQueue: true
+        QueueName: 'roles.fifo'
+        DelaySeconds: 0
+        RedrivePolicy:
+          deadLetterTargetArn: !GetAtt DeadLettersQueue.Arn
+          maxReceiveCount: 5
+        VisibilityTimeout: 180
+    RoleSub:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Protocol: sqs
+        Endpoint: !GetAtt RoleQueue.Arn
+        TopicArn: !Ref MainTopic
+        FilterPolicy:
+          Type: ['NewRoleVersion']

@@ -1,0 +1,5 @@
+autoCreate: true
+apiVersion: '2012-11-05'
+endpoint: http://localhost:9324
+region: ${aws:region}
+skipCacheInvalidation: false

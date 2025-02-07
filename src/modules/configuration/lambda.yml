@@ -1,0 +1,10 @@
+functions:
+  stream-account-configurations:
+    handler: src/stream.handler
+    timeout: ${self:custom.lambda-timeout.stream}
+    environment:
+      EVENT_TYPE: 'NewAccountConfigurationVersion'
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt ConfigurationTable.StreamArn

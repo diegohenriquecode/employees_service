@@ -1,0 +1,10 @@
+functions:
+  stream-news-feed-comments:
+    handler: src/stream.handler
+    timeout: ${self:custom.lambda-timeout.stream}
+    environment:
+      EVENT_TYPE: 'NewNewsFeedCommentVersion'
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt NewsFeedCommentTable.StreamArn

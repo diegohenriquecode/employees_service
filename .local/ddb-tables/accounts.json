@@ -1,0 +1,12 @@
+[
+    {
+        "id": "pioneer",
+        "name": "A primeira de muitas",
+        "subdomain": "pioneer",
+        "responsible": "74afd1fa-b0e2-4b3b-b97c-9cd8da94e048",
+        "timezone": "America/Sao_Paulo",
+        "modules": {"climateCheck": true},
+        "is_demo": false,
+        "cnpj": "75.180.391/0001-72"
+    }
+]

@@ -1,0 +1,15 @@
+functions:
+  api-admin-auth:
+    handler: src/api/admin/lambda.handler
+    events:
+      - http:
+          path: 'admin/auth/{proxy+}'
+          method: ANY
+          cors: true
+  api-admin:
+    handler: src/api/admin/lambda.handler
+    events:
+      - http:
+          path: 'admin/{proxy+}'
+          method: ANY
+          cors: true

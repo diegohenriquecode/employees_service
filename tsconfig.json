@@ -1,0 +1,27 @@
+{
+  "extends": "./tsconfig.paths.json",
+  "include": ["src/**/*", "@types", "src/modules/errors/errros.js"],
+  "exclude": [],
+  "compilerOptions": {
+    "target": "esnext",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "baseUrl": "./src",
+    "paths": {},
+    "typeRoots": ["src/@types", "./node_modules/@types"],
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "declaration": true,
+    "outDir": "./dist",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "strictPropertyInitialization": false,
+    "skipLibCheck": true
+  },
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  }
+}

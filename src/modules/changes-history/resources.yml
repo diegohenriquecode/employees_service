@@ -1,0 +1,57 @@
+resources:
+  Resources:
+    ChangesHistoryTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: 'BarueriChangesHistoryTable'
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          -
+            AttributeName: account
+            AttributeType: S
+          -
+            AttributeName: _EntityEntityIDDate
+            AttributeType: S
+          -
+            AttributeName: change_date
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: account
+            KeyType: HASH
+          -
+            AttributeName: _EntityEntityIDDate
+            KeyType: RANGE
+        GlobalSecondaryIndexes:
+          -
+            IndexName: 'BarueriChangesHistoryByAccountAndDate'
+            KeySchema:
+              -
+                AttributeName: account
+                KeyType: HASH
+              -
+                AttributeName: change_date
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+
+    RegisterChangeHistoryQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        ContentBasedDeduplication: true
+        FifoQueue: true
+        QueueName: 'register-change-history.fifo'
+        DelaySeconds: 0
+        RedrivePolicy:
+          deadLetterTargetArn: !GetAtt DeadLettersQueue.Arn
+          maxReceiveCount: 5
+        VisibilityTimeout: 180
+    RegisterChangeHistorySub:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Protocol: sqs
+        Endpoint: !GetAtt RegisterChangeHistoryQueue.Arn
+        TopicArn: !Ref MainTopic
+        FilterPolicy:
+          Type:
+            - suffix: 'Version'

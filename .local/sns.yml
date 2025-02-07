@@ -1,0 +1,206 @@
+port: 4002
+debug: ${strToBool(${env:DEBUG_SNS, 'true'}), true}
+autoSubscribe: false # https://github.com/mj1618/serverless-offline-sns/issues/140
+accountId: ${env:ACCOUNT_ID, aws:accountId}
+subscriptions:
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+    queue: http://localhost:9324/000000000000/all-events.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['Error']
+    queue: http://localhost:9324/000000000000/error-events.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['NewFeedbackVersion']
+    queue: http://localhost:9324/000000000000/feedback-action.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['NewFeedbackVersion']
+    queue: http://localhost:9324/000000000000/feedback-timeline.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['NewFeedbackVersion']
+    queue: http://localhost:9324/000000000000/feedback-mysql.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['NewFeedbackVersion']
+    queue: http://localhost:9324/000000000000/feedback-email.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['DailyClimateCheckHistory']
+    queue: http://localhost:9324/000000000000/climate-check-history.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['DailyClimateCheckAssiduity']
+    queue: http://localhost:9324/000000000000/climate-check-assiduity.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['NewEvaluationVersion']
+    queue: http://localhost:9324/000000000000/evaluation-action.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['NewEvaluationVersion']
+    queue: http://localhost:9324/000000000000/evaluation-timeline.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['NewEvaluationVersion']
+    queue: http://localhost:9324/000000000000/evaluation-mysql.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['NewEvaluationVersion']
+    queue: http://localhost:9324/000000000000/evaluation-email.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['CreateEvaluationOnSector']
+    queue: http://localhost:9324/000000000000/create-evaluation-on-sector.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['RemoveEvaluationOnSector']
+    queue: http://localhost:9324/000000000000/remove-evaluation-on-sector.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['ExpireEvaluation']
+    queue: http://localhost:9324/000000000000/evaluation-expire.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['NewCoachingRegisterVersion']
+    queue: http://localhost:9324/000000000000/coaching-register-action.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['NewCoachingRegisterVersion']
+    queue: http://localhost:9324/000000000000/coaching-register-timeline.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['NewCoachingRegisterVersion']
+    queue: http://localhost:9324/000000000000/coaching-register-email.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['NewUserVersion']
+    queue: http://localhost:9324/000000000000/user-mysql.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['NewUserVersion']
+    queue: http://localhost:9324/000000000000/user-update-history.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['NewUserVersion']
+    queue: http://localhost:9324/000000000000/user-timeline.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['NewReprimandVersion']
+    queue: http://localhost:9324/000000000000/reprimand-timeline.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['NewSuspensionVersion']
+    queue: http://localhost:9324/000000000000/suspension-timeline.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['NewPendingActionVersion']
+    queue: http://localhost:9324/000000000000/pending-actions-update.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['NewDismissInterviewVersion']
+    queue: http://localhost:9324/000000000000/dismiss-interview-timeline.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['NewTrainingProgressVersion']
+    queue: http://localhost:9324/000000000000/training-progress-mysql.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['GenerateAsyncReport']
+    queue: http://localhost:9324/000000000000/generate-async-report.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['NewOrgSectorVersion']
+    queue: http://localhost:9324/000000000000/org-sector.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['NewUsersImport']
+    queue: http://localhost:9324/000000000000/users-import.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['NewRanksImport']
+    queue: http://localhost:9324/000000000000/ranks-import.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['NewReprimandVersion']
+    queue: http://localhost:9324/000000000000/reprimand-mysql.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['NewSuspensionVersion']
+    queue: http://localhost:9324/000000000000/suspension-mysql.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['NewCoachingRegisterVersion']
+    queue: http://localhost:9324/000000000000/coaching-register-mysql.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['NewDismissInterviewVersion']
+    queue: http://localhost:9324/000000000000/dismiss-interview-mysql.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['NewAccountVersion']
+    queue: http://localhost:9324/000000000000/demo-account.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['NewManagersImport']
+    queue: http://localhost:9324/000000000000/managers-import.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+    queue: http://localhost:9324/000000000000/register-change-history.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['NewUserVersion']
+    queue: http://localhost:9324/000000000000/user-hierarchical.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['NewRankVersion']
+    queue: http://localhost:9324/000000000000/hierarchical-rank.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['NewUserVersion']
+    queue: http://localhost:9324/000000000000/user-disabled-evaluation.fifo
+  - topic:
+      topicName: 'BarueriMainTopic.fifo'
+      filterPolicy:
+        Type: ['NewsNewsFeedAttachmentVersion']
+    queue: http://localhost:9324/000000000000/news-feed-attachment.fifo

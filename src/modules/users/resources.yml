@@ -1,0 +1,106 @@
+resources:
+  Resources:
+    UsersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: 'BarueriUsers'
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          -
+            AttributeName: id
+            AttributeType: S
+          -
+            AttributeName: account
+            AttributeType: S
+          -
+            AttributeName: username
+            AttributeType: S
+          -
+            AttributeName: mobile_phone
+            AttributeType: S
+          -
+            AttributeName: email
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: account
+            KeyType: HASH
+          -
+            AttributeName: id
+            KeyType: RANGE
+        GlobalSecondaryIndexes:
+          -
+            IndexName: 'BarueriUsersByEmail'
+            KeySchema:
+              -
+                AttributeName: account
+                KeyType: HASH
+              -
+                AttributeName: email
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+          -
+            IndexName: 'BarueriUsersByMobilePhone'
+            KeySchema:
+              -
+                AttributeName: account
+                KeyType: HASH
+              -
+                AttributeName: mobile_phone
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+          -
+            IndexName: 'BarueriUsersByUsername'
+            KeySchema:
+              -
+                AttributeName: account
+                KeyType: HASH
+              -
+                AttributeName: username
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
+
+    UserMysqlQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        ContentBasedDeduplication: true
+        FifoQueue: true
+        QueueName: 'user-mysql.fifo'
+        DelaySeconds: 0
+        RedrivePolicy:
+          deadLetterTargetArn: !GetAtt DeadLettersQueue.Arn
+          maxReceiveCount: 5
+        VisibilityTimeout: 180
+    UserMysqlSub:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Protocol: sqs
+        Endpoint: !GetAtt UserMysqlQueue.Arn
+        TopicArn: !Ref MainTopic
+        FilterPolicy:
+          Type: ['NewUserVersion']
+
+    UserTimelineQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        ContentBasedDeduplication: true
+        FifoQueue: true
+        QueueName: 'user-timeline.fifo'
+        DelaySeconds: 0
+        RedrivePolicy:
+          deadLetterTargetArn: !GetAtt DeadLettersQueue.Arn
+          maxReceiveCount: 5
+        VisibilityTimeout: 180
+    UserTimelineSub:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Protocol: sqs
+        Endpoint: !GetAtt UserTimelineQueue.Arn
+        TopicArn: !Ref MainTopic
+        FilterPolicy:
+          Type: ['NewUserVersion']

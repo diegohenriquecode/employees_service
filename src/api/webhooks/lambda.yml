@@ -1,0 +1,7 @@
+functions:
+  api-webhooks:
+    handler: src/api/webhooks/lambda.handler
+    events:
+      - http:
+          path: 'webhooks/{proxy+}'
+          method: ANY

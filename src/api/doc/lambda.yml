@@ -1,0 +1,13 @@
+functions:
+  api-doc:
+    handler: src/api/doc/lambda.handler
+    events:
+      - http:
+          path: 'doc'
+          method: ANY
+      - http:
+          path: 'doc/{proxy+}'
+          method: ANY
+    package:
+      include:
+        - src/doc/**

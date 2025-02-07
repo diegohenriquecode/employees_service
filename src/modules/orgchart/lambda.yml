@@ -1,0 +1,16 @@
+functions:
+  stream-org-sectors:
+    handler: src/stream.handler
+    timeout: ${self:custom.lambda-timeout.stream}
+    environment:
+      EVENT_TYPE: 'NewOrgSectorVersion'
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt OrgSectorsTable.StreamArn
+
+  sub-org-sectors:
+    handler: src/modules/orgchart/sub_update_users.handler
+    events:
+      - sqs:
+          arn: !GetAtt OrgSectorQueue.Arn

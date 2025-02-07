@@ -1,0 +1,21 @@
+resources:
+  Resources:
+    DeadLettersQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        ContentBasedDeduplication: true
+        FifoQueue: true
+        QueueName: 'dead-letter.fifo'
+    DeadLettersTable:
+      Type: 'AWS::DynamoDB::Table'
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: id
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: id
+            KeyType: HASH
+        TableName: 'BarueriDeadLetters'
+        BillingMode: PAY_PER_REQUEST

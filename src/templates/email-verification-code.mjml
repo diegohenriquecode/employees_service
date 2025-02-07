@@ -1,0 +1,48 @@
+<mjml>
+    <mj-body>
+        <mj-section>
+            <mj-column width="100%">
+
+                <mj-image width="100px" src="<%= headerLogoUrl %>"></mj-image>
+
+                <mj-text font-size="20px" color="#59575B" font-family="helvetica" font-weight="bold" align="center">
+                    Recebemos seu pedido de troca de senha!
+                </mj-text>
+
+                <mj-image width="570px" src="<%= bannerUrl %>"></mj-image>
+
+                <mj-text font-size="18px" color="#59575B" font-family="helvetica" font-weight="400" align="center">
+                    Recebemos seu pedido de troca de senha e para que seja possível realizar a troca, adicione o código
+                    de verificação abaixo na tela de validação
+                </mj-text>
+
+                <mj-text font-size="18px" color="#59575B" font-family="helvetica" font-weight="400" align="center">
+                    Código de verificação:
+                </mj-text>
+
+            </mj-column>
+
+            <mj-column width="400px" background-color="#8662DD" padding="10px" border-radius="400px">
+                <mj-text font-size="26px" font-family="helvetica" font-weight="bold" align="center" color="#ffffff"><%=
+                    code %>
+                </mj-text>
+            </mj-column>
+        </mj-section>
+
+        <mj-section background-color="#fff">
+            <mj-column background-color='#F8F8F8' padding="20px">
+                <mj-text font-size="12px" align="center" color="#59575B" font-family="helvetica" padding="0">
+                    Enviado por
+                    <b style="color:#8662DD">Aplicativo Gerencial</b>
+                </mj-text>
+                <!--
+                                <mj-text font-size="12px" align="center" color="#59575B" font-family="helvetica" padding="0">
+                                    Se deseja não receber mais mensagens como esta,
+                                    <a href="#">clique aqui</a>
+                                </mj-text>
+                -->
+            </mj-column>
+        </mj-section>
+
+    </mj-body>
+</mjml>

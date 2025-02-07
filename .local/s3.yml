@@ -1,0 +1,6 @@
+host: localhost
+port: 4569
+directory: .local/buckets
+accessKeyId: 'S3RVER'
+secretAccessKey: 'S3RVER'
+cors: .local/s3-cors.xml

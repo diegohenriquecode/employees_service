@@ -1,0 +1,42 @@
+resources:
+  Resources:
+    ClimateChecksTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: 'BarueriClimateChecksTable'
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          -
+            AttributeName: account
+            AttributeType: S
+          -
+            AttributeName: _DateEmployee
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: account
+            KeyType: HASH
+          -
+            AttributeName: _DateEmployee
+            KeyType: RANGE
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
+    ClimateChecksHistoryTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: 'BarueriClimateCheckHistoryTable'
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          -
+            AttributeName: account
+            AttributeType: S
+          -
+            AttributeName: _SectorTypeDate
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: account
+            KeyType: HASH
+          -
+            AttributeName: _SectorTypeDate
+            KeyType: RANGE

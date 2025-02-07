@@ -1,0 +1,20 @@
+functions:
+  stream-s3-contents:
+    handler: src/modules/contents/stream-s3.handler
+    timeout: 900
+    events:
+      - s3:
+          bucket: !Ref ProtectedBucket
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: 'contents/'
+          existing: true
+  stream-contents:
+    handler: src/stream.handler
+    timeout: ${self:custom.lambda-timeout.stream}
+    environment:
+      EVENT_TYPE: 'NewContentVersion'
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt ContentsTable.StreamArn

@@ -1,0 +1,45 @@
+<mjml>
+  <mj-body>
+    <mj-section>
+      <mj-column width="100%">
+
+        <mj-image width="100px" src="<%= headerLogoUrl %>"></mj-image>
+
+        <mj-text font-size="20px" color="#59575B" font-family="helvetica" font-weight="bold" align="center">
+          <%= title %>
+        </mj-text>
+
+        <mj-image width="570px" src="<%= bannerUrl %>"></mj-image>
+
+      </mj-column>
+
+      <mj-column width="80%" background-color="#F8F8F8" padding="10px" border-radius="8px">
+        <mj-text font-size="18px" color="#59575B" font-family="helvetica" font-weight="400" align="center">
+          <%= description %>
+        </mj-text>
+
+        <mj-button href='<%= linkUrl %>' rel="#" target="_blank" font-family="Helvetica" background-color="#6358EB" color="white" font-size="20px" font-weight="500" border-radius="30px">
+          <%= linkText %>
+        </mj-button>
+
+      </mj-column>
+    </mj-section>
+
+    <mj-section background-color="#fff">
+      <mj-column background-color='#F8F8F8' padding="20px">
+        <mj-text font-size="12px" align="center" color="#59575B" font-family="helvetica" padding="0">
+          <%= sentBy %> <b style="color:#8662DD"><%= barueri %></b>
+        </mj-text>
+
+        <!--
+                        <mj-text font-size="12px" align="center" color="#59575B" font-family="helvetica" padding="0">
+                            Se deseja não receber mais mensagens como esta,
+                            <a href="#">clique aqui</a>
+                        </mj-text>
+        -->
+
+      </mj-column>
+    </mj-section>
+
+  </mj-body>
+</mjml>

@@ -1,0 +1,40 @@
+resources:
+  Resources:
+    NewsFeedCommentTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: 'BarueriNewsFeedComments'
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - 
+            AttributeName: account
+            AttributeType: S
+          - 
+            AttributeName: _PostCommentId
+            AttributeType: S
+          -
+            AttributeName: _PostIdDate 
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: account
+            KeyType: HASH
+          -
+            AttributeName: _PostCommentId
+            KeyType: RANGE
+
+        GlobalSecondaryIndexes:
+          -
+            IndexName: 'BarueriNewsFeedCommentsByDate'
+            KeySchema:
+              -
+                AttributeName: account
+                KeyType: HASH
+              -
+                AttributeName: _PostIdDate
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES

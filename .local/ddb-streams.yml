@@ -1,0 +1,77 @@
+host: localhost
+port: 8080
+region: localhost
+pollForever: true
+streams:
+  - table: BarueriFeedbacks
+    functions:
+      - stream-feedbacks
+  - table: BarueriEvaluations
+    functions:
+      - stream-evaluations
+  - table: BarueriCoachingRegisters
+    functions:
+      - stream-coaching-registers
+  - table: BarueriUsers
+    functions:
+      - stream-users
+  - table: BarueriSuspensions
+    functions:
+      - stream-suspensions
+  - table: BarueriReprimands
+    functions:
+      - stream-reprimands
+  - table: BarueriPendingActions
+    functions:
+      - stream-pending-actions
+  - table: BarueriDismissInterviews
+    functions:
+      - stream-dismiss-interviews
+  - table: BarueriTrainingProgresses
+    functions:
+      - stream-training-progresses
+  - table: BarueriOrgSectors
+    functions:
+      - stream-org-sectors
+  - table: BarueriAccounts
+    functions:
+      - stream-accounts
+  - table: BarueriRanks
+    functions:
+      - stream-ranks
+  - table: BarueriEvaluationsScheduler
+    functions:
+      - stream-evaluations-scheduler
+  - table: BarueriContents
+    functions:
+      - stream-contents
+  - table: BarueriAccountConfiguration
+    functions:
+      - stream-account-configurations
+  - table: BarueriJobVacancies
+    functions:
+      - stream-job-vacancies
+  - table: BarueriClimateChecksTable
+    functions:
+      - stream-climate-checks
+  - table: BarueriTemplates
+    functions:
+      - stream-templates
+  - table: BarueriTrainingTrails
+    functions:
+      - stream-training-trails
+  - table: BarueriTrainings
+    functions:
+      - stream-trainings
+  - table: BarueriVacations
+    functions:
+      - stream-vacations
+  - table: BarueriNewsFeeds
+    functions:
+      - stream-news-feed
+  - table: BarueriNewsFeedComments
+    functions:
+      - stream-news-feed-comments
+  - table: BarueriRoles
+    functions:
+      - stream-roles

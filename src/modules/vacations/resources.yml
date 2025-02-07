@@ -1,0 +1,23 @@
+resources:
+  Resources:
+    VacationsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: 'BarueriVacations'
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          -
+            AttributeName: account
+            AttributeType: S
+          -
+            AttributeName: _EmployeeId
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: account
+            KeyType: HASH
+          -
+            AttributeName: _EmployeeId
+            KeyType: RANGE
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES

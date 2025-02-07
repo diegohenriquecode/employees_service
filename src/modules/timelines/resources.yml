@@ -1,0 +1,38 @@
+resources:
+  Resources:
+    TimelinesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: 'BarueriTimelines'
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          -
+            AttributeName: account
+            AttributeType: S
+          -
+            AttributeName: _EmployeeDateTypeId
+            AttributeType: S
+          -
+            AttributeName: id
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: account
+            KeyType: HASH
+          -
+            AttributeName: _EmployeeDateTypeId
+            KeyType: RANGE
+
+        GlobalSecondaryIndexes:
+          -
+            IndexName: 'BarueriTimelinesByAccountAndId'
+            KeySchema:
+              -
+                AttributeName: account
+                KeyType: HASH
+              -
+                AttributeName: id
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+

@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="divport" content="width=device-width; initial-scale=1.0" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        font-family: "Poppins";
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        padding: 20px;
+      }
+
+      .container {
+        display: flex;
+        height: 100%;
+        flex-direction: column;
+        padding: 16px 15px;
+      }
+
+      header {
+        width: 100%;
+        display: flex;
+        background: #e4e8ee;
+        border-radius: 4px;
+      }
+
+      .documentType {
+        width: 186px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 10px;
+        background-color: #f3f5f7;
+        padding: 8px 9px;
+        border-radius: 4px;
+      }
+
+      .documentType span {
+        font-weight: 500;
+        font-size: 10px;
+        line-height: 10px;
+        color: #59575b;
+      }
+
+      .user {
+        width: 100%;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        padding: 6px 14px;
+      }
+
+      .user > span {
+        width: 70%;
+        font-weight: 600;
+        font-size: 10px;
+        line-height: 15px;
+        display: flex;
+        align-items: center;
+        color: #59575b;
+        border-bottom: 0.5px solid #ababc9;
+      }
+
+      .userInfos {
+        width: 30%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+      }
+
+      .userInfos img {
+        position: relative;
+
+        width: 27px;
+        height: 27px;
+
+        object-fit: cover;
+        object-position: center;
+
+        border-radius: 27px;
+      }
+
+      .userInfos div {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+      }
+
+      .userInfos div span {
+        font-weight: 500;
+        font-size: 7px;
+        line-height: 10px;
+        display: flex;
+        align-items: center;
+        color: #ababc9;
+      }
+
+      .userInfos div p {
+        font-weight: 600;
+        font-size: 10px;
+        line-height: 15px;
+        display: flex;
+        align-items: center;
+
+        color: #59575b;
+        margin-left: 2px;
+      }
+
+      .businessInfoContainer {
+        width: 100%;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        background: #f3f5f7;
+        border-radius: 4px;
+        padding: 10px 8px;
+        margin-top: 10px;
+      }
+
+      .businessInfo {
+        width: 100%;
+        background: #ffffff;
+        border-radius: 21.5px;
+        padding: 4px 9px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 10px;
+      }
+
+      .businessInfo span {
+        font-weight: 400;
+        font-size: 10px;
+        color: #9997a3;
+      }
+
+      .businessInfo p {
+        font-weight: 600;
+        font-size: 10px;
+        color: #59575b;
+      }
+
+      .businessInfoRow {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .businessInfoRow .businessInfo:first-child {
+        width: 64%;
+      }
+
+      .businessInfoRow .businessInfo:last-child {
+        width: 34%;
+      }
+
+      main {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-top: 26px;
+      }
+
+      main > p {
+        width: 495px;
+        font-size: 12px;
+        line-height: 20px;
+        text-align: center;
+        color: #000000;
+      }
+
+      main > p > span {
+        letter-spacing: -3px;
+      }
+
+      .descriptionContainer {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
+        gap: 5px;
+        margin-top: 18px;
+      }
+
+      .descriptionContainer span {
+        font-weight: 500;
+        font-size: 10px;
+        line-height: 15px;
+        display: flex;
+        align-items: center;
+        color: #59575b;
+      }
+
+      .description {
+        width: 100%;
+        background: #f3f5f7;
+        border-radius: 4px;
+        padding: 14px 18px;
+      }
+
+      .description p {
+        width: 100%;
+        font-weight: 400;
+        font-size: 11px;
+        line-height: 16px;
+        text-align: justify;
+        color: #59575b;
+      }
+
+      .signatureContainer {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .endText {
+        width: 495px;
+        font-weight: 400;
+        font-size: 12px;
+        line-height: 18px;
+        text-align: center;
+        color: #59575b;
+        margin: 42px auto 0;
+      }
+
+      .signatures {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 40px;
+        margin-top: 42px;
+      }
+
+      .signatureText {
+        width: 100%;
+        font-weight: 500;
+        font-size: 12px;
+        line-height: 18px;
+        text-align: center;
+        color: #59575b;
+      }
+
+      .signatureLineContainer {
+        width: 100%;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 14px;
+      }
+      .signatureLineContainer .signatureLine {
+        width: 50%;
+        height: 1px;
+        background-color: #59575b;
+      }
+
+      .signatureLineContainer .date p {
+        font-weight: 500;
+        font-size: 12px;
+        line-height: 18px;
+        display: flex;
+        align-items: center;
+        color: #59575b;
+      }
+
+      .signatureLineContainer .date p span {
+        letter-spacing: -3px;
+      }
+
+      footer {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: auto;
+        position: fixed;
+        bottom: 0;
+        height: 50px;
+        width: 100%;
+      }
+
+      footer .logoContainer {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 8px;
+        height: 100%;
+      }
+
+      .footer-logo {
+        width: 26px;
+        height: 18px;
+      }
+
+      footer .texts p {
+        font-weight: 400;
+        font-size: 10px;
+        line-height: 11px;
+        color: #9997a3;
+      }
+
+      footer > p {
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 30px;
+        color: #9997a3;
+      }
+
+      .page-footer-space {
+        height: 50px;
+      }
+
+      .table {
+        width: 100%;
+      }
+
+      .name {
+        font-weight: 500;
+        font-size: 12px;
+        letter-spacing: normal;
+      }
+
+    </style>
+  </head>
+
+  <body>
+    <table class="table">
+      <tbody>
+        <tr>
+          <td>
+            <div class="container" id="container">
+              <header>
+                <div class="documentType">
+                  <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10.2946 17.8587C14.4722 17.8587 17.8587 14.4722 17.8587 10.2946C17.8587 6.11705 14.4722 2.73047 10.2946 2.73047C6.11705 2.73047 2.73047 6.11705 2.73047 10.2946C2.73047 14.4722 6.11705 17.8587 10.2946 17.8587Z" stroke="#6358EB" stroke-miterlimit="10"/>
+                    <path d="M10.2949 6.51251V10.9249" stroke="#6358EB" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M10.2941 14.707C10.8163 14.707 11.2397 14.2837 11.2397 13.7615C11.2397 13.2393 10.8163 12.816 10.2941 12.816C9.77196 12.816 9.34863 13.2393 9.34863 13.7615C9.34863 14.2837 9.77196 14.707 10.2941 14.707Z" fill="#6358EB"/>
+                  </svg>
+
+                  <span>
+                    <%= title %>
+                  </span>
+                </div>
+
+                <div class="user">
+                  <span><%= labels.rated %></span>
+
+                  <div class="userInfos">
+                    <img src="<%= employeeAvatarUrl %>" />
+                    <div>
+                      <span><%= labels.name %></span>
+                      <p><%= employeeName %></p>
+                    </div>
+                  </div>
+                </div>
+              </header>
+
+              <section class="businessInfoContainer">
+                <div class="businessInfo">
+                  <span><%= labels.company %>:</span>
+                  <p><%= labels.companyName %></p>
+                </div>
+
+                <div class="businessInfoRow">
+                  <div class="businessInfo">
+                    <span><%= labels.sector %>:</span>
+                    <p><%= employeeSector %></p>
+                  </div>
+
+                  <div class="businessInfo">
+                    <span><%= date %>:</span>
+                    <p><%= createdAt %></p>
+                  </div>
+                </div>
+
+                <div class="businessInfoRow">
+                  <div class="businessInfo">
+                    <span><%= labels.manager %>:</span>
+                    <p><%= managerName %></p>
+                  </div>
+
+                  <div />
+                </div>
+              </section>
+
+              <main>
+                <p>
+                    <%- section1 %>
+                </p>
+
+                <div class="descriptionContainer">
+                  <span><%= labels.description %>*</span>
+
+                  <div class="description">
+                    <% paragraphs.forEach(function(item){ %>
+                        <p><%= item %></p>
+                    <% }); %>
+                  </div>
+                </div>
+
+                <div class="signatureContainer">
+                  <div class="signatures">
+                    <p class="signatureText"><%= managerSignature %>:</p>
+
+                    <div class="signatureLineContainer">
+                      <div class="signatureLine"></div>
+
+                      <div class="date">
+                        <p><%= date %>: <span>______/______/________</span></p>
+                      </div>
+                    </div>
+
+                    <p class="signatureText"><%= employeeSignature %>:</p>
+
+                    <div class="signatureLineContainer">
+                      <div class="signatureLine"></div>
+
+                      <div class="date">
+                        <p><%= date %>: <span>______/______/________</span></p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </main>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td>
+            <!--placeholder for the fixed-position footer-->
+            <div class="page-footer-space"></div>
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+
+      <footer>
+        <div class="logoContainer">
+          <svg width="26" height="18" viewBox="0 0 48 71" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M4.24172 51.794C6.17672 50.7281 8.6094 51.4327 9.67527 53.3677C12.8714 59.1701 18.6612 62.9034 25.0288 62.9034C31.3976 62.9034 37.1884 59.1687 40.3843 53.3809C41.4521 51.447 43.8855 50.7449 45.8194 51.8127C47.7533 52.8806 48.4554 55.314 47.3876 57.2479C42.9527 65.2797 34.6438 70.9034 25.0288 70.9034C15.4125 70.9034 7.10262 65.2782 2.66801 57.2275C1.60215 55.2925 2.30672 52.8599 4.24172 51.794Z" fill="#FFB204"/>
+            <path d="M24 48.28C37.2548 48.28 48 37.4722 48 24.14C48 10.8078 37.2548 0 24 0C10.7452 0 0 10.8078 0 24.14C0 37.4722 10.7452 48.28 24 48.28Z" fill="#6358EB"/>
+            <path d="M48 44V26C48 23.7909 46.2091 22 44 22C41.7909 22 40 23.7909 40 26V44C40 46.2091 41.7909 48 44 48C46.2091 48 48 46.2091 48 44Z" fill="#6358EB"/>
+          </svg>
+
+          <div class="texts">
+            <p><%= labels.copywright %></p>
+            <p><strong><%= labels.website %></strong></p>
+          </div>
+      </footer>
+  </body>
+</html>

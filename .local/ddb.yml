@@ -1,0 +1,39 @@
+stages:
+  - offline
+start:
+  port: 8080
+  inMemory: true
+  migrate: true
+  seed: true
+  noStart: true
+seed:
+  offline:
+    sources:
+      - table: BarueriAdmins
+        sources: [.local/ddb-tables/admins.json]
+      - table: BarueriTokensTable
+        sources: [.local/ddb-tables/tokens.json]
+      - table: BarueriAccounts
+        sources: [.local/ddb-tables/accounts.json]
+      - table: BarueriOrgSectors
+        sources: [.local/ddb-tables/sectors.json]
+      - table: BarueriClimateChecksTable
+        sources: [.local/ddb-tables/climate-checks.json]
+      - table: BarueriEvaluations
+        sources: [.local/ddb-tables/evaluations.json]
+      - table: BarueriPendingActions
+        sources: [.local/ddb-tables/pending-actions.json]
+      - table: BarueriTimelines
+        sources: [.local/ddb-tables/timelines.json]
+      - table: BarueriReprimands
+        sources: [.local/ddb-tables/reprimands.json]
+      - table: BarueriRanks
+        sources: [.local/ddb-tables/ranks.json]
+      - table: BarueriTemplates
+        sources: [.local/ddb-tables/templates.json]
+      - table: BarueriTrainings
+        sources: [.local/ddb-tables/trainings.json]
+      - table: BarueriUsers
+        sources: [.local/ddb-tables/users.json]
+      - table: BarueriTrainingTrails
+        sources: [.local/ddb-tables/trainings-trails.json]

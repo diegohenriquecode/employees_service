@@ -1,0 +1,10 @@
+functions:
+  stream-templates:
+    handler: src/stream.handler
+    timeout: ${self:custom.lambda-timeout.stream}
+    environment:
+      EVENT_TYPE: 'NewTemplateVersion'
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt TemplatesTable.StreamArn

@@ -1,0 +1,26 @@
+functions:
+  stream-boletos:
+    handler: src/stream.handler
+    timeout: ${self:custom.lambda-timeout.stream}
+    environment:
+      EVENT_TYPE: 'NewBoletoVersion'
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt BoletosTable.StreamArn
+  job-generate-boletos:
+    handler: src/modules/boletos/job-generate.handler
+    timeout: ${self:custom.lambda-timeout.job}
+    events:
+      - schedule: cron(0 11 * * ? *)
+  job-expire-boletos:
+    handler: src/modules/boletos/job-expire.handler
+    timeout: ${self:custom.lambda-timeout.job}
+    events:
+      - schedule: cron(0 2 * * ? *)
+  sub-boleto-update-status:
+    handler: src/modules/boletos/subscriptions/sub_boleto_update_status.handler
+    timeout: ${self:custom.lambda-timeout.sub}
+    events:
+      - sqs:
+          arn: !GetAtt UpdateBoletoStatusQueue.Arn

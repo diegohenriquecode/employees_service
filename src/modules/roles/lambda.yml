@@ -1,0 +1,10 @@
+functions:
+  stream-roles:
+    handler: src/stream.handler
+    timeout: ${self:custom.lambda-timeout.stream}
+    environment:
+      EVENT_TYPE: 'NewRoleVersion'
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt RolesTable.StreamArn

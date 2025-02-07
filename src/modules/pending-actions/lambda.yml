@@ -1,0 +1,43 @@
+functions:
+  stream-pending-actions:
+    handler: src/stream.handler
+    timeout: ${self:custom.lambda-timeout.stream}
+    environment:
+      EVENT_TYPE: 'NewPendingActionVersion'
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt PendingActionsTable.StreamArn
+  handler-feedback-action:
+    handler: src/modules/pending-actions/feedbacks.handler
+    events:
+      - sqs:
+          arn: !GetAtt FeedbackActionQueue.Arn
+  job-pending-actions:
+    handler: src/modules/pending-actions/job.handler
+    timeout: ${self:custom.lambda-timeout.job}
+    environment:
+      DEBUG: false
+    events:
+      - schedule: cron(0 * * * ? *)
+  sub-pending-actions:
+    handler: src/modules/pending-actions/sub-pending-action.handler
+    events:
+      - sqs:
+          arn: !GetAtt PendingActionsUpdateQueue.Arn
+  sub-user-disabled:
+    handler: src/modules/pending-actions/subscriptions/sub-user-disabled.handler
+    timeout: ${self:custom.lambda-timeout.sub}
+    events:
+      - sqs:
+          arn: !GetAtt UserDisabledQueue.Arn
+  handler-evaluation-action:
+    handler: src/modules/pending-actions/evaluations.handler
+    events:
+      - sqs:
+          arn: !GetAtt EvaluationActionQueue.Arn
+  handler-coaching-register-action:
+    handler: src/modules/pending-actions/coaching-registers.handler
+    events:
+      - sqs:
+          arn: !GetAtt CoachingRegisterActionQueue.Arn

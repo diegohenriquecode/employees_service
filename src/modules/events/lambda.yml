@@ -1,0 +1,8 @@
+functions:
+  handler-topic-events:
+    handler: src/modules/events/lambda.handler
+    environment:
+      DEBUG: false
+    events:
+      - sqs:
+          arn: !GetAtt MainTopicEventsSubQueue.Arn

@@ -1,0 +1,16 @@
+functions:
+  stream-training-progresses:
+    handler: src/stream.handler
+    timeout: ${self:custom.lambda-timeout.stream}
+    environment:
+      EVENT_TYPE: 'NewTrainingProgressVersion'
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt TrainingProgressesTable.StreamArn
+          maximumRetryAttempts: 5
+  sub-training-progresses-mysql:
+    handler: src/modules/training-progresses/subscriptions/sub-mysql.handler
+    events:
+      - sqs:
+          arn: !GetAtt TrainingProgressMysqlQueue.Arn

@@ -1,0 +1,8 @@
+functions:
+  privateAuth:
+    handler: src/auth/private.handler
+    alarms:
+      - name: functionErrors
+        enabled: false
+  publicAuth:
+    handler: src/auth/public.handler

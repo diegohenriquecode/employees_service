@@ -1,0 +1,63 @@
+resources:
+  Resources:
+    BoletosTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: BarueriBoletos
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          -
+            AttributeName: account
+            AttributeType: S
+          -
+            AttributeName: id
+            AttributeType: S
+          -
+            AttributeName: status
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: account
+            KeyType: HASH
+          -
+            AttributeName: id
+            KeyType: RANGE
+        GlobalSecondaryIndexes:
+          -
+            IndexName: 'BarueriBoletosById'
+            KeySchema:
+              -
+                AttributeName: id
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+          -
+            IndexName: 'BarueriBoletosByStatus'
+            KeySchema:
+              -
+                AttributeName: status
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
+
+    UpdateBoletoStatusQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        ContentBasedDeduplication: true
+        FifoQueue: true
+        QueueName: 'update-boleto-status.fifo'
+        DelaySeconds: 0
+        RedrivePolicy:
+          deadLetterTargetArn: !GetAtt DeadLettersQueue.Arn
+          maxReceiveCount: 5
+        VisibilityTimeout: 180
+    UpateBoletoStatusActionSub:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Protocol: sqs
+        Endpoint: !GetAtt UpdateBoletoStatusQueue.Arn
+        TopicArn: !Ref MainTopic
+        FilterPolicy:
+          Type: ['UpdateBoletoStatus']

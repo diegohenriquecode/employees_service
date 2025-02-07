@@ -1,0 +1,50 @@
+resources:
+  Resources:
+    ProtectedBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        CorsConfiguration:
+          CorsRules:
+            -
+              AllowedOrigins:
+                - '*'
+              AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - GET
+                - PUT
+                - POST
+                - DELETE
+                - HEAD
+              MaxAge: 3000
+    PublicBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        CorsConfiguration:
+          CorsRules:
+            -
+              AllowedOrigins:
+                - '*'
+              AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - GET
+                - PUT
+                - POST
+                - DELETE
+                - HEAD
+              MaxAge: 3000
+    PublicBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      DependsOn:
+        - PublicBucket
+      Properties:
+        Bucket: !Ref PublicBucket
+        PolicyDocument:
+          Statement:
+            -
+              Action:
+                - "s3:GetObject"
+              Effect: "Allow"
+              Resource: !Join ["", ["arn:aws:s3:::", !Ref PublicBucket, "/*"]]
+              Principal: '*'

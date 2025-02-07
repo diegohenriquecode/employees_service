@@ -1,0 +1,4 @@
+functions:
+  migrate:
+    handler: src/modules/db/lambda.handler
+    timeout: 900

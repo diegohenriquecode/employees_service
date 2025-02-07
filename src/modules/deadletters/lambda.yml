@@ -1,0 +1,6 @@
+functions:
+  handler-dead-letters:
+    handler: src/modules/deadletters/lambda.handler
+    events:
+      - sqs:
+          arn: !GetAtt DeadLettersQueue.Arn

@@ -1,0 +1,6 @@
+functions:
+  sub-change-history:
+    handler: src/modules/changes-history/subscriptions/sub_register_change_history.handler
+    events:
+      - sqs:
+          arn: !GetAtt RegisterChangeHistoryQueue.Arn

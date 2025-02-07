@@ -1,0 +1,6 @@
+functions:
+  handler-errors:
+    handler: src/modules/errors/lambda.handler
+    events:
+      - sqs:
+          arn: !GetAtt ErrorsEventsSubscriptionQueue.Arn

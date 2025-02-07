@@ -1,0 +1,204 @@
+resources:
+  Resources:
+    FrontBucket:
+      Type: AWS::S3::Bucket
+    FrontOriginAccessId:
+      Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+      Properties:
+        CloudFrontOriginAccessIdentityConfig:
+          Comment: 'barueri'
+    FrontBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      DependsOn:
+        - FrontBucket
+        - FrontOriginAccessId
+      Properties:
+        Bucket: !Ref FrontBucket
+        PolicyDocument:
+          Statement:
+            -
+              Action:
+                - "s3:GetObject"
+              Effect: "Allow"
+              Resource: !Join ["", ["arn:aws:s3:::", !Ref FrontBucket, "/*"]]
+              Principal:
+                AWS: !Join ["", ["arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ", !Ref FrontOriginAccessId]]
+            -
+              Action:
+                - "s3:GetObject"
+              Effect: "Allow"
+              Resource: !Join ["", ["arn:aws:s3:::", !Ref FrontBucket, "/assets/*"]]
+              Principal: '*'
+    AppDistribution:
+      Type: AWS::CloudFront::Distribution
+      DependsOn:
+        - LogsS3Bucket
+        - FrontBucket
+        - FrontOriginAccessId
+        - FrontBucketPolicy
+        - ApiDistribution
+      Properties:
+        DistributionConfig:
+          Enabled: true
+          HttpVersion: http2
+          IPV6Enabled: false
+          PriceClass: PriceClass_100
+          Comment: 'barueri app'
+          DefaultRootObject: "index.html"
+          Aliases:
+            - ${self:custom.secrets.REACT_APP_APP_DOMAIN} # *.dev.app-gerencial.scisapp.com
+          ViewerCertificate:
+            AcmCertificateArn: ${self:custom.secrets.DOMAIN_CERTIFICATE}
+            MinimumProtocolVersion: TLSv1.2_2018
+            SslSupportMethod: sni-only
+          Logging:
+            Bucket: !GetAtt LogsS3Bucket.DomainName
+            Prefix: 'app/'
+          CustomErrorResponses:
+            - ErrorCachingMinTTL: 0
+              ErrorCode: 403
+              ResponseCode: 200
+              ResponsePagePath: /index.html
+            - ErrorCachingMinTTL: 0
+              ErrorCode: 404
+              ResponseCode: 200
+              ResponsePagePath: /index.html
+          DefaultCacheBehavior:
+            TargetOriginId: DefaultOrigin
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+            FieldLevelEncryptionId: ""
+            CachedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+            ForwardedValues:
+              Cookies:
+                Forward: none
+              QueryString: false
+            MinTTL: 0
+            MaxTTL: 31536000
+            DefaultTTL: 86400
+            SmoothStreaming: false
+            Compress: true
+          Origins:
+            -
+              Id: DefaultOrigin
+              DomainName: !GetAtt FrontBucket.DomainName
+              OriginPath: "/app"
+              S3OriginConfig:
+                OriginAccessIdentity: !Join ["", ["origin-access-identity/cloudfront/", !Ref FrontOriginAccessId]]
+    AppDNSRecord:
+      Type: AWS::Route53::RecordSet
+      DependsOn: AppDistribution
+      Properties:
+        HostedZoneId: ${self:custom.secrets.ACCOUNTS_DOMAIN_HOSTED_ZONE_ID, self:custom.secrets.BASE_DOMAIN_HOSTED_ZONE_ID}
+        Name: ${self:custom.secrets.REACT_APP_APP_DOMAIN}
+        Type: A
+        AliasTarget:
+          DNSName: !GetAtt AppDistribution.DomainName
+          EvaluateTargetHealth: false
+          HostedZoneId: Z2FDTNDATAQYW2
+    AppIpV6DNSRecord:
+      Type: AWS::Route53::RecordSet
+      DependsOn: AppDistribution
+      Properties:
+        HostedZoneId: ${self:custom.secrets.ACCOUNTS_DOMAIN_HOSTED_ZONE_ID, self:custom.secrets.BASE_DOMAIN_HOSTED_ZONE_ID}
+        Name: ${self:custom.secrets.REACT_APP_APP_DOMAIN}
+        Type: AAAA
+        AliasTarget:
+          DNSName: !GetAtt AppDistribution.DomainName
+          EvaluateTargetHealth: false
+          HostedZoneId: Z2FDTNDATAQYW2
+    AdminDistribution:
+      Type: AWS::CloudFront::Distribution
+      DependsOn:
+        - LogsS3Bucket
+        - FrontBucket
+        - FrontOriginAccessId
+        - FrontBucketPolicy
+        - AppDistribution
+      Properties:
+        DistributionConfig:
+          Enabled: true
+          HttpVersion: http2
+          IPV6Enabled: false
+          PriceClass: PriceClass_100
+          Comment: 'barueri admin'
+          DefaultRootObject: "index.html"
+          Aliases:
+            - ${self:custom.secrets.REACT_APP_ADMIN_DOMAIN} # admin.dev.app-gerencial.scisapp.com
+          ViewerCertificate:
+            AcmCertificateArn: ${self:custom.secrets.DOMAIN_CERTIFICATE}
+            MinimumProtocolVersion: TLSv1.2_2018
+            SslSupportMethod: sni-only
+          Logging:
+            Bucket: !GetAtt LogsS3Bucket.DomainName
+            Prefix: 'admin/'
+          CustomErrorResponses:
+            - ErrorCachingMinTTL: 0
+              ErrorCode: 403
+              ResponseCode: 200
+              ResponsePagePath: /index.html
+            - ErrorCachingMinTTL: 0
+              ErrorCode: 404
+              ResponseCode: 200
+              ResponsePagePath: /index.html
+          DefaultCacheBehavior:
+            TargetOriginId: DefaultOrigin
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+            FieldLevelEncryptionId: ""
+            CachedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+            ForwardedValues:
+              Cookies:
+                Forward: none
+              QueryString: false
+            MinTTL: 0
+            MaxTTL: 31536000
+            DefaultTTL: 86400
+            SmoothStreaming: false
+            Compress: true
+          Origins:
+            -
+              Id: DefaultOrigin
+              DomainName: !GetAtt FrontBucket.DomainName
+              OriginPath: "/admin"
+              S3OriginConfig:
+                OriginAccessIdentity: !Join ["", ["origin-access-identity/cloudfront/", !Ref FrontOriginAccessId]]
+    AdminDNSRecord:
+      Type: AWS::Route53::RecordSet
+      DependsOn: AdminDistribution
+      Properties:
+        HostedZoneId: ${self:custom.secrets.BASE_DOMAIN_HOSTED_ZONE_ID}
+        Name: ${self:custom.secrets.REACT_APP_ADMIN_DOMAIN}
+        Type: A
+        AliasTarget:
+          DNSName: !GetAtt AdminDistribution.DomainName
+          EvaluateTargetHealth: false
+          HostedZoneId: Z2FDTNDATAQYW2
+    AdminIpV6DNSRecord:
+      Type: AWS::Route53::RecordSet
+      DependsOn: AdminDistribution
+      Properties:
+        HostedZoneId: ${self:custom.secrets.BASE_DOMAIN_HOSTED_ZONE_ID}
+        Name: ${self:custom.secrets.REACT_APP_ADMIN_DOMAIN}
+        Type: AAAA
+        AliasTarget:
+          DNSName: !GetAtt AdminDistribution.DomainName
+          EvaluateTargetHealth: false
+          HostedZoneId: Z2FDTNDATAQYW2
+  Outputs:
+    FrontEndBucketName:
+      Value: !Ref FrontBucket
+      Export:
+        Name: BarueriFrontEndBucketName

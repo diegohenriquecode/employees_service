@@ -1,0 +1,16 @@
+- Type: AWS::S3::Bucket
+  DeletionPolicy: Retain
+  Properties:
+    AccessControl: BucketOwnerFullControl
+    PublicAccessBlockConfiguration:
+      BlockPublicAcls: false
+      BlockPublicPolicy: false
+      IgnorePublicAcls: false
+      RestrictPublicBuckets: false
+    OwnershipControls:
+      Rules:
+        - ObjectOwnership: 'ObjectWriter'
+- Type: AWS::DynamoDB::Table
+  DeletionPolicy: Retain
+- Type: AWS::Logs::LogGroup
+  DeletionPolicy: Retain

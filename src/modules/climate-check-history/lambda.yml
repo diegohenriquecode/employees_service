@@ -1,0 +1,11 @@
+functions:
+  job-climate-check-history:
+    handler: src/modules/climate-check-history/job.handler
+    timeout: 900
+    events:
+      - schedule: cron(0 * * * ? *)
+  subscription-climate-check-history:
+    handler: src/modules/climate-check-history/subscription.handler
+    events:
+      - sqs:
+          arn: !GetAtt ClimateCheckHistoryQueue.Arn

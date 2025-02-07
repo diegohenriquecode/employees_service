@@ -1,0 +1,20 @@
+functions:
+  sub-ranks-import:
+    handler: src/modules/ranks/sub_import.handler
+    events:
+      - sqs:
+          arn: !GetAtt NewRanksImportQueue.Arn
+  stream-ranks:
+    handler: src/stream.handler
+    timeout: ${self:custom.lambda-timeout.stream}
+    environment:
+      EVENT_TYPE: 'NewRankVersion'
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt RanksTable.StreamArn
+  sub-hierarchical-ranks:
+    handler: src/modules/ranks/sub_hierarchical_ranks.handler
+    events:
+      - sqs:
+          arn: !GetAtt HierarchicalRankQueue.Arn

@@ -1,0 +1,6 @@
+functions:
+  sub-async-tasks:
+    handler: src/modules/async-tasks/generate_async_reports.handler
+    events:
+      - sqs:
+          arn: !GetAtt GenerateAsyncReportQueue.Arn

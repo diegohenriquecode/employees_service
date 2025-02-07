@@ -1,0 +1,25 @@
+functions:
+  stream-reprimands:
+    handler: src/stream.handler
+    timeout: ${self:custom.lambda-timeout.stream}
+    environment:
+      EVENT_TYPE: 'NewReprimandVersion'
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt ReprimandsTable.StreamArn
+  stream-s3-reprimands:
+    handler: src/modules/reprimands/stream-s3.handler
+    timeout: 900
+    events:
+      - s3:
+          bucket: !Ref ProtectedBucket
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: 'reprimands/'
+          existing: true
+  sub-reprimand-mysql:
+    handler: src/modules/reprimands/sub_mysql.handler
+    events:
+      - sqs:
+          arn: !GetAtt ReprimandMysqlQueue.Arn

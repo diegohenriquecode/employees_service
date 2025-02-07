@@ -1,0 +1,40 @@
+functions:
+  stream-evaluations:
+    handler: src/stream.handler
+    timeout: ${self:custom.lambda-timeout.stream}
+    environment:
+      EVENT_TYPE: 'NewEvaluationVersion'
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt EvaluationsTable.StreamArn
+  handler-create-evaluation-on-sector:
+    handler: src/modules/evaluations/subscriptions/sub-create-on-sector.handler
+    events:
+      - sqs:
+          arn: !GetAtt CreateEvaluationOnSectorQueue.Arn
+  sub-remove-evaluation-on-sector:
+    handler: src/modules/evaluations/subscriptions/sub-remove-on-sector.handler
+    events:
+      - sqs:
+          arn: !GetAtt RemoveEvaluationOnSectorQueue.Arn
+  sub-evaluation-mysql:
+    handler: src/modules/evaluations/subscriptions/sub_mysql.handler
+    events:
+      - sqs:
+          arn: !GetAtt EvaluationMysqlQueue.Arn
+  sub-evaluation-email:
+    handler: src/modules/evaluations/subscriptions/sub-email.handler
+    events:
+      - sqs:
+          arn: !GetAtt EvaluationEmailQueue.Arn
+  job-expire-evaluations:
+    handler: src/modules/evaluations/job.handler
+    timeout: 900
+    events:
+      - schedule: cron(0 * * * ? *)
+  sub-evaluation-expire:
+    handler: src/modules/evaluations/subscriptions/sub-expire.handler
+    events:
+      - sqs:
+          arn: !GetAtt EvaluationExpireQueue.Arn

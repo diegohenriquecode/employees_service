@@ -1,0 +1,25 @@
+functions:
+  stream-users:
+    handler: src/stream.handler
+    timeout: ${self:custom.lambda-timeout.stream}
+    environment:
+      EVENT_TYPE: 'NewUserVersion'
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt UsersTable.StreamArn
+  sub-users-mysql:
+    handler: src/modules/users/sub_mysql.handler
+    events:
+      - sqs:
+          arn: !GetAtt UserMysqlQueue.Arn
+  sub-users-import:
+    handler: src/modules/users/subscriptions/sub-users-import.handler
+    events:
+      - sqs:
+          arn: !GetAtt NewUsersImportQueue.Arn
+  sub-managers-import:
+    handler: src/modules/users/subscriptions/sub-managers-import.handler
+    events:
+      - sqs:
+          arn: !GetAtt NewManagersImportQueue.Arn

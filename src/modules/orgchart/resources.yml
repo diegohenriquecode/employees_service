@@ -1,0 +1,61 @@
+resources:
+  Resources:
+    OrgSectorsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: 'BarueriOrgSectors'
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          -
+            AttributeName: id
+            AttributeType: S
+          -
+            AttributeName: account
+            AttributeType: S
+          -
+            AttributeName: path
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: account
+            KeyType: HASH
+          -
+            AttributeName: id
+            KeyType: RANGE
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
+
+
+        GlobalSecondaryIndexes:
+          -
+            IndexName: 'BarueriOrgSectorsByPath'
+            KeySchema:
+              -
+                AttributeName: account
+                KeyType: HASH
+              -
+                AttributeName: path
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+
+    OrgSectorQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        ContentBasedDeduplication: true
+        FifoQueue: true
+        QueueName: 'org-sector.fifo'
+        DelaySeconds: 0
+        RedrivePolicy:
+          deadLetterTargetArn: !GetAtt DeadLettersQueue.Arn
+          maxReceiveCount: 5
+        VisibilityTimeout: 180
+
+    OrgSectorSub:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Protocol: sqs
+        Endpoint: !GetAtt OrgSectorQueue.Arn
+        TopicArn: !Ref MainTopic
+        FilterPolicy:
+          Type: ['NewOrgSectorVersion']

@@ -1,0 +1,21 @@
+functions:
+  job-scheduled-evaluations:
+    handler: src/modules/evaluations-scheduler/job-scheduled.handler
+    timeout: 900
+    events:
+      - schedule: cron(0 * * * ? *)
+  stream-evaluations-scheduler:
+    handler: src/stream.handler
+    timeout: ${self:custom.lambda-timeout.stream}
+    environment:
+      EVENT_TYPE: 'NewEvaluationSchedulerVersion'
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt EvaluationsSchedulerTable.StreamArn
+  sub-user-disabled-evaluation:
+    handler: src/modules/evaluations-scheduler/subscriptions/sub-user-disabled-evaluation.handler
+    timeout: ${self:custom.lambda-timeout.sub}
+    events:
+      - sqs:
+          arn: !GetAtt UserDisabledEvaluationQueue.Arn

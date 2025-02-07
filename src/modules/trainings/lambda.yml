@@ -1,0 +1,20 @@
+functions:
+  stream-s3-trainings:
+    handler: src/modules/trainings/stream-s3.handler
+    timeout: 900
+    events:
+      - s3:
+          bucket: !Ref PublicBucket
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: 'trainings/'
+          existing: true
+  stream-trainings:
+    handler: src/stream.handler
+    timeout: ${self:custom.lambda-timeout.stream}
+    environment:
+      EVENT_TYPE: 'NewTrainingVersion'
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt TrainingsTable.StreamArn

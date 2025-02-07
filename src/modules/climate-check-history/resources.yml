@@ -1,0 +1,20 @@
+resources:
+  Resources:
+    ClimateCheckHistoryQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        ContentBasedDeduplication: true
+        FifoQueue: true
+        QueueName: 'climate-check-history.fifo'
+        RedrivePolicy:
+          deadLetterTargetArn: !GetAtt DeadLettersQueue.Arn
+          maxReceiveCount: 5
+        VisibilityTimeout: 180
+    ClimateCheckHistorySubscription:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Protocol: sqs
+        Endpoint: !GetAtt ClimateCheckHistoryQueue.Arn
+        TopicArn: !Ref MainTopic
+        FilterPolicy:
+          Type: ['DailyClimateCheckHistory']

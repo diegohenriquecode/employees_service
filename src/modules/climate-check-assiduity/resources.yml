@@ -1,0 +1,39 @@
+resources:
+  Resources:
+    ClimateCheckAssiduityTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: 'BarueriClimateCheckAssiduityTable'
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          -
+            AttributeName: account
+            AttributeType: S
+          -
+            AttributeName: _SectorDate
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: account
+            KeyType: HASH
+          -
+            AttributeName: _SectorDate
+            KeyType: RANGE
+    ClimateCheckAssiduityQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        ContentBasedDeduplication: true
+        FifoQueue: true
+        QueueName: 'climate-check-assiduity.fifo'
+        RedrivePolicy:
+          deadLetterTargetArn: !GetAtt DeadLettersQueue.Arn
+          maxReceiveCount: 5
+        VisibilityTimeout: 180
+    ClimateCheckAssiduitySubscription:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Protocol: sqs
+        Endpoint: !GetAtt ClimateCheckAssiduityQueue.Arn
+        TopicArn: !Ref MainTopic
+        FilterPolicy:
+          Type: ['DailyClimateCheckAssiduity']

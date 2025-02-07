@@ -1,0 +1,36 @@
+functions:
+  handler-feedback-timeline:
+    handler: src/modules/timelines/feedbacks.handler
+    events:
+      - sqs:
+          arn: !GetAtt FeedbackTimelineQueue.Arn
+  handler-suspension-timeline:
+    handler: src/modules/timelines/suspensions.handler
+    events:
+      - sqs:
+          arn: !GetAtt SuspensionTimelineQueue.Arn
+  handler-reprimand-timeline:
+    handler: src/modules/timelines/reprimands.handler
+    events:
+      - sqs:
+          arn: !GetAtt ReprimandTimelineQueue.Arn
+  handler-evaluation-timeline:
+    handler: src/modules/timelines/evaluations.handler
+    events:
+      - sqs:
+          arn: !GetAtt EvaluationTimelineQueue.Arn
+  handler-user-timeline:
+    handler: src/modules/timelines/users.handler
+    events:
+      - sqs:
+          arn: !GetAtt UserTimelineQueue.Arn
+  handler-coaching-register-timeline:
+    handler: src/modules/timelines/coaching-registers.handler
+    events:
+      - sqs:
+          arn: !GetAtt CoachingRegisterTimelineQueue.Arn
+  handler-dismiss-interview-timeline:
+    handler: src/modules/timelines/dismiss-interviews.handler
+    events:
+      - sqs:
+          arn: !GetAtt DismissInterviewTimelineQueue.Arn

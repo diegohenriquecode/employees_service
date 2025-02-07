@@ -1,0 +1,13 @@
+# Título: [TIPO][CODIGO-HISTORIA][CODIGO-TASK] - Descrição breve, inicia com letra maiúscula e não termina com ponto
+# Adicionar código da história e código da task
+# TIPO pode ser: FEATURE, FIX ou HOTFIX
+# Tentar manter com no máximo 72 caractéres ########### que é aqui -> #
+[TIPO][CODIGO-HISTORIA][CODIGO-TASK] - Escreva seu título aqui
+
+# Se lembre da linha em branco entre o título e a descrição
+
+# Descrição: Explique o que e o porquê das mudanças realizadas de forma breve
+Escreva aqui sua descrição
+
+
+# Linhas iniciadas com # são desconsideradas pelo git, todas as outras serão incluídas no seu commit

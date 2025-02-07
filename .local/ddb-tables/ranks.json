@@ -1,0 +1,50 @@
+[
+    {
+        "account": "pioneer",
+        "id": "admin",
+        "created_at": "2022-12-09T11:53:51.155Z",
+        "created_by": "3ccfd18c-7417-4ec7-be11-c5190dae6233",
+        "description": "admin",
+        "disabled": false,
+        "title": "admin",
+        "updated_at": "2022-12-26T12:47:14.930Z",
+        "updated_by": "4c35db4a-4c12-44b7-b7bd-20b283d77b33",
+        "_title": "admin"
+    },
+    {
+        "account": "pioneer",
+        "id": "rh",
+        "created_at": "2022-12-09T11:53:51.155Z",
+        "created_by": "3ccfd18c-7417-4ec7-be11-c5190dae6233",
+        "description": "rh",
+        "disabled": false,
+        "title": "rh",
+        "updated_at": "2022-12-26T12:47:14.930Z",
+        "updated_by": "4c35db4a-4c12-44b7-b7bd-20b283d77b33",
+        "_title": "rh"
+    },
+    {
+        "account": "pioneer",
+        "id": "employee",
+        "created_at": "2022-12-09T11:53:51.155Z",
+        "created_by": "3ccfd18c-7417-4ec7-be11-c5190dae6233",
+        "description": "employee",
+        "disabled": false,
+        "title": "employee",
+        "updated_at": "2022-12-26T12:47:14.930Z",
+        "updated_by": "4c35db4a-4c12-44b7-b7bd-20b283d77b33",
+        "_title": "employee"
+    },
+    {
+        "account": "pioneer",
+        "id": "manager",
+        "created_at": "2022-12-09T11:53:51.155Z",
+        "created_by": "3ccfd18c-7417-4ec7-be11-c5190dae6233",
+        "description": "manager",
+        "disabled": false,
+        "title": "manager",
+        "updated_at": "2022-12-26T12:47:14.930Z",
+        "updated_by": "4c35db4a-4c12-44b7-b7bd-20b283d77b33",
+        "_title": "manager"
+    }
+]

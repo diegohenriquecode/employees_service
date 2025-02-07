@@ -1,0 +1,341 @@
+service: barueri-backend
+frameworkVersion: '3'
+
+useDotenv: true
+
+custom:
+  # gitVariablesEnvWhitelist: []
+  # gitVariablesTagsWhitelist: ["GIT_REPOSITORY", "GIT_COMMIT_LONG", "GIT_BRANCH", "GIT_IS_DIRTY"]
+  secrets: ${ssm:/aws/reference/secretsmanager/barueri-config}
+  esbuild:
+    packager: yarn
+    minify: true
+    sourcemap: true
+    concurrency: 3
+    zipConcurrency: 3
+    nativeZip: true
+    loader:
+      .ejs: text
+    external:
+      - '@sparticuz/chromium'
+    exclude: ['@aws-sdk/*']
+    plugins: esbuild-plugins.js
+  alerts:
+    alarms:
+      - functionErrors
+    topics:
+      alarm:
+        topic: !ImportValue BarueriErrorTopicArn
+    externalStack: true
+  dynamodb: ${file(.local/ddb.yml)}
+  dynamodbStream: ${file(.local/ddb-streams.yml)}
+  serverless-offline: ${file(.local/offline.yml)}
+  serverless-offline-ssm: ${file(.local/ssm.yml)}
+  serverless-offline-sns: ${file(.local/sns.yml)}
+  serverless-offline-sqs: ${file(.local/sqs.yml)}
+  s3: ${file(.local/s3.yml)}
+  protectedBucket:
+    offline: 'ProtectedBucket'
+    default: !Ref ProtectedBucket
+  publicBucket:
+    offline: 'PublicBucket'
+    default: !Ref PublicBucket
+  s3Config:
+    offline: []
+    default:
+      - bucketNameKey: FrontEndBucketName
+        bucketPrefix: assets/
+        localDir: src/templates/assets
+        acl: public-read
+  s3Sync: ${self:custom.s3Config.${opt:stage, 'default'}}
+  privateAuth:
+    type: request
+    name: privateAuth
+    resultTtlInSeconds: 60
+    identitySource: method.request.header.Origin, method.request.header.Authorization
+  publicAuth:
+    type: request
+    name: publicAuth
+    resultTtlInSeconds: 300
+    identitySource: method.request.header.Origin
+  localPrivateAuth:
+    name: ${env:LOCAL_PRIVATE_AUTHORIZER_FN, 'localPrivateAuthByMock'}
+    type: request
+  localPublicAuth:
+    name: ${env:LOCAL_PUBLIC_AUTHORIZER_FN, 'localPublicAuthByMock'}
+    type: request
+  lambda-timeout:
+    stream: 900
+    job: 900
+    sub: 179
+  defaultAwsAttributes: ${file(./resources/default.yml)}
+  scriptable:
+    hooks:
+      after:package:compileEvents: plugins/simplify-cf.js
+
+package:
+  individually: true
+
+provider:
+  name: aws
+  region: us-east-1
+  runtime: nodejs18.x
+  deploymentMethod: direct
+  stage: v1
+  timeout: 28
+  memorySize: 1024
+  versionFunctions: false
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:*
+          Resource:
+            - arn:aws:dynamodb:${aws:region}:${env:ACCOUNT_ID, aws:accountId}:table/Barueri*
+            - arn:aws:dynamodb:${aws:region}:${env:ACCOUNT_ID, aws:accountId}:table/Barueri*/stream/*
+            - arn:aws:dynamodb:${aws:region}:${env:ACCOUNT_ID, aws:accountId}:table/Barueri*/index/*
+        - Effect: Allow
+          Action:
+            - sns:publish
+          Resource:
+            - !Ref MainTopic
+            - !Ref ErrorsTopic
+        - Effect: Allow
+          Action:
+            - logs:FilterLogEvents
+          Resource:
+            - '*'
+        - Effect: Allow
+          Action:
+            - ses:SendEmail
+            - ses:SendRawEmail
+          Resource: "*"
+        - Effect: Allow
+          Action:
+            - s3:PutObject
+            - s3:GetObject
+            - s3:DeleteObject
+            - s3:ListBucket
+          Resource:
+            - !Join ["/", [!GetAtt ProtectedBucket.Arn, '*']]
+            - !Join ["/", [!GetAtt PublicBucket.Arn, '*']]
+            - !Join ["/", [!GetAtt ProtectedBucket.Arn]]
+            - !Join ["/", [!GetAtt PublicBucket.Arn]]
+        - Effect: Allow
+          Action:
+            - lambda:InvokeFunction
+          Resource:
+            - 'arn:aws:lambda:${aws:region}:${env:ACCOUNT_ID, aws:accountId}:function:barueri-backend-${opt:stage, self:provider.stage}-pdf-generator'
+  environment:
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1'
+    NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000'
+    STAGE: ${opt:stage, self:provider.stage}
+    DEBUG: ${self:custom.secrets.DEBUG}
+    INTERNAL_API_KEY: ${self:custom.secrets.INTERNAL_API_KEY}
+    API_DOMAIN: ${self:custom.secrets.REACT_APP_API_DOMAIN}
+    APP_DOMAIN: ${self:custom.secrets.REACT_APP_APP_DOMAIN}
+    FALLBACK_ACCOUNT_SUBDOMAIN: ${self:custom.secrets.FALLBACK_ACCOUNT_SUBDOMAIN, ''}
+    ERRORS_TOPIC_ARN: !Ref ErrorsTopic
+    EVENTS_TOPIC_ARN: 'arn:aws:sns:${aws:region}:${env:ACCOUNT_ID, aws:accountId}:BarueriMainTopic.fifo'
+    AUTH_EMAIL_SOURCE: ${self:custom.secrets.AUTH_EMAIL_SOURCE}
+    NOTIFICATIONS_EMAIL_SOURCE: ${self:custom.secrets.NOTIFICATIONS_EMAIL_SOURCE}
+    DEBUG_EMAIL_ADDR: ${self:custom.secrets.DEBUG_EMAIL_ADDR, ''}
+    APP_CLIENT_ID: ${self:custom.secrets.REACT_APP_APP_CLIENT}
+    ADMIN_CLIENT_ID: ${self:custom.secrets.REACT_APP_ADMIN_CLIENT}
+    MYSQL_HOST: ${self:custom.secrets.MYSQL_HOST}
+    MYSQL_PORT: ${self:custom.secrets.MYSQL_PORT}
+    MYSQL_DATABASE: ${self:custom.secrets.MYSQL_DATABASE}
+    MYSQL_USER: ${self:custom.secrets.MYSQL_DATABASE}
+    MYSQL_PASSWORD: ${self:custom.secrets.MYSQL_PASSWORD}
+    LATE_PERIOD: ${self:custom.secrets.LATE_PERIOD, 5}
+    BOLETO_EXPIRATION_DELAY: ${self:custom.secrets.BOLETO_EXPIRATION_DELAY, 7}
+    PROTECTED_BUCKET_NAME: ${self:custom.protectedBucket.${opt:stage, 'default'}}
+    ASSETS_BASE_URL: !Join [ "/", [ !GetAtt FrontBucket.DomainName, 'assets' ] ]
+    PUBLIC_ASSETS_BASE_URL: !Join [ "/", [ !GetAtt PublicBucket.DomainName ] ]
+    PUBLIC_BUCKET_NAME: ${self:custom.publicBucket.${opt:stage, 'default'}}
+
+    TOKYO_YOKOHAMA_BASE_URL: ${self:custom.secrets.TOKYO_YOKOHAMA_BASE_URL}
+    TOKYO_OSAKA_BASE_URL: ${self:custom.secrets.TOKYO_OSAKA_BASE_URL}
+    TOKYO_API_KEY: ${self:custom.secrets.TOKYO_API_KEY}
+    TOKYO_OSAKA_WEBHOOK_KEY: ${self:custom.secrets.TOKYO_OSAKA_WEBHOOK_KEY}
+
+    ROLES_FEATURE_FLAG: ${self:custom.secrets.ROLES_FEATURE_FLAG, 'false'}
+
+    CISPAY_BASE_URL: ${self:custom.secrets.CISPAY_BASE_URL}
+    CISPAY_API_KEY: ${self:custom.secrets.CISPAY_API_KEY}
+    CISPAY_CLIENT_ID: ${self:custom.secrets.CISPAY_CLIENT_ID}
+    CISPAY_WEBHOOK_API_KEY: ${self:custom.secrets.CISPAY_WEBHOOK_API_KEY}
+    CISPAY_SELLER_ID: ${self:custom.secrets.CISPAY_SELLER_ID}
+
+functions:
+  - ${file(./src/api/admin/lambda.yml):functions}
+  - ${file(./src/api/app/lambda.yml):functions}
+  - ${file(./src/api/app/oauth/lambda.yml):functions}
+  - ${file(./src/api/app/public/lambda.yml):functions}
+  - ${file(./src/api/doc/lambda.yml):functions}
+  - ${file(./src/api/internal/lambda.yml):functions}
+  - ${file(./src/api/webhooks/lambda.yml):functions}
+  - ${file(./src/auth/lambda.yml):functions}
+  - ${file(./src/modules/accounts/lambda.yml):functions}
+  - ${file(./src/modules/climate-check-assiduity/lambda.yml):functions}
+  - ${file(./src/modules/climate-check-history/lambda.yml):functions}
+  - ${file(./src/modules/coaching-registers/lambda.yml):functions}
+  - ${file(./src/modules/contents/lambda.yml):functions}
+  - ${file(./src/modules/db/lambda.yml):functions}
+  - ${file(./src/modules/deadletters/lambda.yml):functions}
+  - ${file(./src/modules/employees/lambda.yml):functions}
+  - ${file(./src/modules/errors/lambda.yml):functions}
+  - ${file(./src/modules/evaluations-scheduler/lambda.yml):functions}
+  - ${file(./src/modules/evaluations/lambda.yml):functions}
+  - ${file(./src/modules/events/lambda.yml):functions}
+  - ${file(./src/modules/feedbacks/lambda.yml):functions}
+  - ${file(./src/modules/pdf/lambda.yml):functions}
+  - ${file(./src/modules/pending-actions/lambda.yml):functions}
+  - ${file(./src/modules/reprimands/lambda.yml):functions}
+  - ${file(./src/modules/suspensions/lambda.yml):functions}
+  - ${file(./src/modules/training-progresses/lambda.yml):functions}
+  - ${file(./src/modules/timelines/lambda.yml):functions}
+  - ${file(./src/modules/trainings/lambda.yml):functions}
+  - ${file(./src/modules/training-trails/lambda.yml):functions}
+  - ${file(./src/modules/users/lambda.yml):functions}
+  - ${file(./src/modules/users-update-history/lambda.yml):functions}
+  - ${file(./src/modules/dismiss-interviews/lambda.yml):functions}
+  - ${file(./src/modules/orgchart/lambda.yml):functions}
+  - ${file(./src/modules/async-tasks/lambda.yml):functions}
+  - ${file(./src/modules/ranks/lambda.yml):functions}
+  - ${file(./src/modules/changes-history/lambda.yml):functions}
+  - ${file(./src/modules/users-hierarchical/lambda.yml):functions}
+  - ${file(./src/modules/configuration/lambda.yml):functions}
+  - ${file(./src/modules/job-vacancies/lambda.yml):functions}
+  - ${file(./src/modules/climate-checks/lambda.yml):functions}
+  - ${file(./src/modules/templates/lambda.yml):functions}
+  - ${file(./src/modules/vacations/lambda.yml):functions}
+  - ${file(./src/modules/news-feed/lambda.yml):functions}
+  - ${file(./src/modules/news-feed/comment/lambda.yml):functions}
+  - ${file(./src/modules/roles/lambda.yml):functions}
+  - ${file(./src/modules/boletos/lambda.yml):functions}
+
+resources:
+  - ${file(./resources/api.yml):resources}
+  - ${file(./resources/front.yml):resources}
+  - ${file(./resources/storage.yml):resources}
+  - ${file(./src/modules/deadletters/resources.yml):resources}
+  - ${file(./src/modules/events/resources.yml):resources}
+  - ${file(./src/modules/errors/resources.yml):resources}
+  - ${file(./src/modules/admins/resources.yml):resources}
+  - ${file(./src/modules/sessions/resources.yml):resources}
+  - ${file(./src/modules/tokens/resources.yml):resources}
+  - ${file(./src/modules/orgchart/resources.yml):resources}
+  - ${file(./src/modules/climate-check-history/resources.yml):resources}
+  - ${file(./src/modules/climate-check-assiduity/resources.yml):resources}
+  - ${file(./src/modules/climate-checks/resources.yml):resources}
+  - ${file(./src/modules/feedbacks/resources.yml):resources}
+  - ${file(./src/modules/coaching-registers/resources.yml):resources}
+  - ${file(./src/modules/accounts/resources.yml):resources}
+  - ${file(./src/modules/ranks/resources.yml):resources}
+  - ${file(./src/modules/evaluations/resources.yml):resources}
+  - ${file(./src/modules/pending-actions/resources.yml):resources}
+  - ${file(./src/modules/timelines/resources.yml):resources}
+  - ${file(./src/modules/reprimands/resources.yml):resources}
+  - ${file(./src/modules/suspensions/resources.yml):resources}
+  - ${file(./src/modules/evaluations-scheduler/resources.yml):resources}
+  - ${file(./src/modules/users/resources.yml):resources}
+  - ${file(./src/modules/users-update-history/resources.yml):resources}
+  - ${file(./src/modules/vacations/resources.yml):resources}
+  - ${file(./src/modules/templates/resources.yml):resources}
+  - ${file(./src/modules/trainings/resources.yml):resources}
+  - ${file(./src/modules/training-trails/resources.yml):resources}
+  - ${file(./src/modules/training-progresses/resources.yml):resources}
+  - ${file(./src/modules/faq/resources.yml):resources}
+  - ${file(./src/modules/onboarding/resources.yml):resources}
+  - ${file(./src/modules/videos/resources.yml):resources}
+  - ${file(./src/modules/unseen-items/resources.yml):resources}
+  - ${file(./src/modules/contents/resources.yml):resources}
+  - ${file(./src/modules/dismiss-interviews/resources.yml):resources}
+  - ${file(./src/modules/sessions-reports/resources.yml):resources}
+  - ${file(./src/modules/async-tasks/resources.yml):resources}
+  - ${file(./src/modules/configuration/resources.yml):resources}
+  - ${file(./src/modules/job-vacancies/resources.yml):resources}
+  - ${file(./src/modules/changes-history/resources.yml):resources}
+  - ${file(./src/modules/users-hierarchical/resources.yml):resources}
+  - ${file(./src/modules/news-feed/resources.yml):resources}
+  - ${file(./src/modules/news-feed/comment/resources.yml):resources}
+  - ${file(./src/modules/roles/resources.yml):resources}
+  - ${file(./src/modules/boletos/resources.yml):resources}
+  - Resources:
+      SubQueuesPolicy:
+        Type: AWS::SQS::QueuePolicy
+        Properties:
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Principal:
+                  Service: 'sns.amazonaws.com'
+                Resource: '*'
+                Action: "sqs:SendMessage"
+                Condition:
+                  ArnEquals:
+                    "aws:SourceArn": !Ref MainTopic
+          Queues:
+            - Ref: FeedbackEmailQueue
+            - Ref: FeedbackActionQueue
+            - Ref: FeedbackTimelineQueue
+            - Ref: FeedbackMysqlQueue
+            - Ref: DemoAccountQueue
+            - Ref: GenerateAsyncReportQueue
+            - Ref: NewUsersImportQueue
+            - Ref: NewRanksImportQueue
+            - Ref: NewManagersImportQueue
+            - Ref: ClimateCheckAssiduityQueue
+            - Ref: ClimateCheckHistoryQueue
+            - Ref: CoachingRegisterActionQueue
+            - Ref: CoachingRegisterTimelineQueue
+            - Ref: CoachingRegisterEmailQueue
+            - Ref: CoachingRegisterMysqlQueue
+            - Ref: DismissInterviewTimelineQueue
+            - Ref: DismissInterviewMysqlQueue
+            - Ref: ErrorsEventsSubscriptionQueue
+            - Ref: EvaluationActionQueue
+            - Ref: EvaluationTimelineQueue
+            - Ref: EvaluationEmailQueue
+            - Ref: CreateEvaluationOnSectorQueue
+            - Ref: RemoveEvaluationOnSectorQueue
+            - Ref: EvaluationMysqlQueue
+            - Ref: EvaluationExpireQueue
+            - Ref: MainTopicEventsSubQueue
+            - Ref: OrgSectorQueue
+            - Ref: PendingActionsUpdateQueue
+            - Ref: UserDisabledQueue
+            - Ref: UserDisabledEvaluationQueue
+            - Ref: ReprimandTimelineQueue
+            - Ref: ReprimandMysqlQueue
+            - Ref: SuspensionTimelineQueue
+            - Ref: SuspensionMysqlQueue
+            - Ref: TrainingProgressMysqlQueue
+            - Ref: UserMysqlQueue
+            - Ref: UserTimelineQueue
+            - Ref: UserUpdateHistoryQueue
+            - Ref: RegisterChangeHistoryQueue
+            - Ref: UserHierarchicalQueue
+            - Ref: HierarchicalRankQueue
+            - Ref: NewsFeedAttachmentQueue
+            - Ref: UpdateBoletoStatusQueue
+
+plugins:
+  - serverless-esbuild
+  - ./on-offline-start.js
+  - serverless-dynamodb-local
+  - serverless-plugin-offline-dynamodb-stream
+  - serverless-offline-ssm
+  - serverless-offline-sqs
+  - serverless-offline-sns
+  - serverless-offline-local-authorizers-plugin
+  - serverless-s3-local
+  - serverless-offline
+  - serverless-plugin-aws-alerts
+  # - serverless-plugin-git-variables
+  - serverless-s3-sync # this plugin uses aws sdk v2
+  - serverless-default-aws-resource-attributes
+  - serverless-scriptable-plugin

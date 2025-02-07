@@ -1,0 +1,4 @@
+allowCache: true
+useChildProcesses: true
+httpPort: 8505
+lambdaPort: 8605

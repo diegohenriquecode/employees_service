@@ -1,0 +1,27 @@
+functions:
+  stream-s3-protected-news-feed:
+    handler: src/modules/news-feed/s3-stream.handler
+    timeout: ${self:custom.lambda-timeout.stream}
+    environment:
+      EVENT_TYPE: 'NewNewsFeedAttachmentVersion'
+    events:
+      - s3:
+          bucket: !Ref ProtectedBucket
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: 'news-feed/'
+          existing: true
+  sub-s3-attachment:
+    handler: src/modules/news-feed/sub-s3.handler
+    events:
+      - sqs:
+          arn: !GetAtt NewsFeedAttachmentQueue.Arn
+  stream-news-feed:
+    handler: src/stream.handler
+    timeout: ${self:custom.lambda-timeout.stream}
+    environment:
+      EVENT_TYPE: 'NewNewsFeedVersion'
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt NewsFeedTable.StreamArn

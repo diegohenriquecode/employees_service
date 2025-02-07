@@ -1,0 +1,36 @@
+resources:
+  Resources:
+    ErrorsTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: 'BarueriErrorsTopic'
+    ErrorsSubscription:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Endpoint: ${self:custom.secrets.ERRORS_MAIL_ADDR}
+        Protocol: email
+        TopicArn: !Ref ErrorsTopic
+    ErrorsEventsSubscriptionQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        ContentBasedDeduplication: true
+        FifoQueue: true
+        QueueName: 'error-events.fifo'
+        DelaySeconds: 180
+        RedrivePolicy:
+          deadLetterTargetArn: !GetAtt DeadLettersQueue.Arn
+          maxReceiveCount: 5
+        VisibilityTimeout: 180
+    ErrorsEventsSub:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Protocol: sqs
+        Endpoint: !GetAtt ErrorsEventsSubscriptionQueue.Arn
+        TopicArn: !Ref MainTopic
+        FilterPolicy:
+          Type: ['Error']
+  Outputs:
+    ErrorTopicArn:
+      Value: !Ref ErrorsTopic
+      Export:
+        Name: BarueriErrorTopicArn

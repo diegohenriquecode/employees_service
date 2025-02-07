@@ -1,0 +1,10 @@
+functions:
+  stream-vacations:
+    handler: src/stream.handler
+    timeout: ${self:custom.lambda-timeout.stream}
+    environment:
+      EVENT_TYPE: 'NewVacationVersion'
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt VacationsTable.StreamArn

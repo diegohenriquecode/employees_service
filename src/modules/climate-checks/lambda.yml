@@ -1,0 +1,10 @@
+functions:
+  stream-climate-checks:
+    handler: src/stream.handler
+    timeout: ${self:custom.lambda-timeout.stream}
+    environment:
+      EVENT_TYPE: 'NewClimateCheckVersion'
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt ClimateChecksTable.StreamArn

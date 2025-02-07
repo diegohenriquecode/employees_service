@@ -1,0 +1,17 @@
+resources:
+  Resources:
+    ConfigurationTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: 'BarueriAccountConfiguration'
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          -
+            AttributeName: account
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: account
+            KeyType: HASH
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES

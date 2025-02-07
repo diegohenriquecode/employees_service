@@ -1,0 +1,21 @@
+resources:
+  Resources:
+    SessionsReportsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: 'BarueriSessionsReportsTable'
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          -
+            AttributeName: account
+            AttributeType: S
+          -
+            AttributeName: _DateEmployee
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: account
+            KeyType: HASH
+          -
+            AttributeName: _DateEmployee
+            KeyType: RANGE

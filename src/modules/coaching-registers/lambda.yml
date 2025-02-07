@@ -1,0 +1,20 @@
+functions:
+  stream-coaching-registers:
+    handler: src/stream.handler
+    timeout: ${self:custom.lambda-timeout.stream}
+    environment:
+      EVENT_TYPE: 'NewCoachingRegisterVersion'
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt CoachingRegistersTable.StreamArn
+  sub-coaching-register-email:
+    handler: src/modules/coaching-registers/sub-email.handler
+    events:
+      - sqs:
+          arn: !GetAtt CoachingRegisterEmailQueue.Arn
+  sub-coaching-register-mysql:
+    handler: src/modules/coaching-registers/sub_mysql.handler
+    events:
+      - sqs:
+          arn: !GetAtt CoachingRegisterMysqlQueue.Arn

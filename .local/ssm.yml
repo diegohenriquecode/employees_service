@@ -1,0 +1,34 @@
+stages:
+  - offline
+ssm:
+  /aws/reference/secretsmanager/barueri-config:
+    DEBUG: ${env:DEBUG, 'true'} # Configuração do log
+    AUTH_EMAIL_SOURCE: 'dev@barueri.scisapp.com' # endereço do qual serão enviados os emails de troca de senha
+    NOTIFICATIONS_EMAIL_SOURCE: 'notificacoes@scisapp.com' # endereço do qual serão enviados os emails de notificações
+    DEBUG_EMAIL_ADDR: 'dev@barueri.scisapp.com' # endereço para enviar emails em debug (deixar em branco em produção)
+    INTERNAL_API_KEY: "offline-local-dev" # api key para uso interno
+    ERRORS_MAIL_ADDR: 'dev@barueri.scisapp.com' # endereço para enviar os erros
+    REACT_APP_API_DOMAIN: 'localhost:8505' # Domínio base das urls da api
+    REACT_APP_APP_DOMAIN: 'localhost:3000' # Domínio base das urls do admin
+    REACT_APP_ADMIN_DOMAIN: 'localhost:3000' # Domínio base das urls do app
+    REACT_APP_APP_CLIENT: 'app-client-id' # client id do front (app)
+    REACT_APP_ADMIN_CLIENT: 'admin-client-id' # client id do front (admin)
+    DOMAIN_CERTIFICATE: '' # ARN do certificado do domínio
+    BASE_DOMAIN_HOSTED_ZONE_ID: '' # Id da hosted zone dos domínios (Route 53)
+    ACCOUNTS_DOMAIN_HOSTED_ZONE_ID: '' # Id da hosted zone do subdomínio das contas (Route 53)
+    MYSQL_HOST: ${env:MYSQL_HOST, ''} # domínio do host dos bancos
+    MYSQL_PORT: ${env:MYSQL_PORT, ''} # porta do host dos bancos
+    MYSQL_PASSWORD: ${env:MYSQL_PASSWORD, ''} # senha do banco do serviço
+    MYSQL_DATABASE: ${env:MYSQL_DATABASE, ''} # nome do banco e do usuário
+    FALLBACK_ACCOUNT_SUBDOMAIN: 'pioneer' # fallback de subdominio de account nos casos de localhost ou IP (deixar em branco em produção)
+    LATE_PERIOD: '1'
+    TOKYO_YOKOHAMA_BASE_URL: '' # Url base do yokohama
+    TOKYO_OSAKA_BASE_URL: '' # Url base do osaka
+    TOKYO_API_KEY: '' # api-key do tokyo
+    TOKYO_OSAKA_WEBHOOK_KEY: '' # api-key p/ o osaka usar
+
+    CISPAY_BASE_URL: 'https://apisandbox.dev.cispay.com.br/dev' # Url base da cispay
+    CISPAY_API_KEY: ${env:CISPAY_API_KEY, ''} # api-key da cispay
+    CISPAY_CLIENT_ID: ${env:CISPAY_CLIENT_ID, ''} # client-id da cispay
+    CISPAY_WEBHOOK_API_KEY: ${env:CISPAY_WEBHOOK_API_KEY, ''} # # api-key p/ webhook p/ cispay
+    CISPAY_SELLER_ID: ${env:CISPAY_SELLER_ID, ''} # sellerId cispay

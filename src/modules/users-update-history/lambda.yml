@@ -1,0 +1,6 @@
+functions:
+  sub-users-update-history:
+    handler: src/modules/users-update-history/sub-user.handler
+    events:
+      - sqs:
+          arn: !GetAtt UserUpdateHistoryQueue.Arn

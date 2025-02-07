@@ -1,0 +1,24 @@
+resources:
+  Resources:
+    TrainingTrailsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: 'BarueriTrainingTrails'
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          -
+            AttributeName: account
+            AttributeType: S
+          -
+            AttributeName: id
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: account
+            KeyType: HASH
+          -
+            AttributeName: id
+            KeyType: RANGE
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
+

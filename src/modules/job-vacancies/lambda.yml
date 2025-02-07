@@ -1,0 +1,10 @@
+functions:
+  stream-job-vacancies:
+    handler: src/stream.handler
+    timeout: ${self:custom.lambda-timeout.stream}
+    environment:
+      EVENT_TYPE: 'NewJobVacanciesVersion'
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt JobVacanciesTable.StreamArn

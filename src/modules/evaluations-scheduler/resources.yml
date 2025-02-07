@@ -1,0 +1,58 @@
+resources:
+  Resources:
+    EvaluationsSchedulerTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: 'BarueriEvaluationsScheduler'
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          -
+            AttributeName: account
+            AttributeType: S
+          -
+            AttributeName: _sector_id
+            AttributeType: S
+          - 
+            AttributeName: status
+            AttributeType: S            
+        KeySchema:
+          -
+            AttributeName: account
+            KeyType: HASH
+          -
+            AttributeName: _sector_id
+            KeyType: RANGE
+        GlobalSecondaryIndexes:
+          -
+            IndexName: BarueriEvaluationsSchedulerByStatus
+            KeySchema:
+              - 
+                AttributeName: status
+                KeyType: HASH            
+              -
+                AttributeName: account
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
+
+    UserDisabledEvaluationQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        ContentBasedDeduplication: true
+        FifoQueue: true
+        QueueName: 'user-disabled-evaluation.fifo'
+        DelaySeconds: 0
+        RedrivePolicy:
+          deadLetterTargetArn: !GetAtt DeadLettersQueue.Arn
+          maxReceiveCount: 5
+        VisibilityTimeout: 180
+    UserDisabledEvaluationSub:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Protocol: sqs
+        Endpoint: !GetAtt UserDisabledEvaluationQueue.Arn
+        TopicArn: !Ref MainTopic
+        FilterPolicy:
+          Type: ['NewUserVersion']

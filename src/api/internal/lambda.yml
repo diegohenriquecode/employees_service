@@ -1,0 +1,7 @@
+functions:
+  api-internal:
+    handler: src/api/internal/lambda.handler
+    events:
+      - http:
+          path: 'internal/{proxy+}'
+          method: ANY

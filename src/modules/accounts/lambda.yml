@@ -1,0 +1,41 @@
+functions:
+  stream-s3-accounts:
+    handler: src/modules/accounts/stream-s3.handler
+    timeout: 900
+    events:
+      - s3:
+          bucket: !Ref PublicBucket
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: 'accounts/'
+          existing: true
+  stream-protected-s3-accounts:
+    handler: src/modules/accounts/stream-s3.handler
+    timeout: 900
+    events:
+      - s3:
+          bucket: !Ref ProtectedBucket
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: 'accounts/'
+          existing: true
+  stream-accounts:
+    handler: src/stream.handler
+    timeout: ${self:custom.lambda-timeout.stream}
+    environment:
+      EVENT_TYPE: 'NewAccountVersion'
+    events:
+      - stream:
+          type: dynamodb
+          arn: !GetAtt AccountsTable.StreamArn
+  sub-populate-demo-account:
+    handler: src/modules/accounts/sub-populate-demo-account.handler
+    timeout: ${self:custom.lambda-timeout.sub}
+    events:
+      - sqs:
+          arn: !GetAtt DemoAccountQueue.Arn
+  job-account-expiry-date:
+    handler: src/modules/accounts/job.handler
+    timeout: 900
+    events:
+      - schedule: cron(0 * * * ? *)
